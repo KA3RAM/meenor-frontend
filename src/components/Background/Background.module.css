@@ -1,0 +1,86 @@
+.background{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:-1;
+
+    background:
+        radial-gradient(circle at top,#111111 0%,#050505 45%,#000000 100%);
+}
+
+/* ------------------ */
+/* ORBS */
+/* ------------------ */
+
+.orb{
+    position:absolute;
+
+    width:500px;
+    height:500px;
+
+    border-radius:50%;
+
+    filter:blur(120px);
+
+    mix-blend-mode:screen;
+
+    opacity:.9;
+}
+
+.blue{
+
+    top:-120px;
+    left:-150px;
+
+    background:
+    radial-gradient(
+        circle,
+        rgba(0,229,255,.95) 0%,
+        rgba(0,180,255,.65) 45%,
+        transparent 75%
+    );
+
+}
+
+.cream{
+
+    right:-120px;
+    bottom:-150px;
+
+    background:
+    radial-gradient(
+        circle,
+        rgba(255,235,190,.9) 0%,
+        rgba(255,208,130,.6) 45%,
+        transparent 75%
+    );
+
+}
+
+/* ------------------ */
+/* NOISE */
+/* ------------------ */
+
+.noise{
+
+    position:absolute;
+    inset:0;
+
+    opacity:.035;
+
+    background-image:
+
+        radial-gradient(#ffffff 0.6px, transparent 0.6px),
+
+        radial-gradient(#ffffff 0.6px, transparent 0.6px);
+
+    background-position:
+        0 0,
+        12px 12px;
+
+    background-size:
+        24px 24px;
+
+    pointer-events:none;
+
+}

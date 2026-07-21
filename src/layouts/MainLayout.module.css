@@ -1,0 +1,9 @@
+
+.container {
+  font-family: "Anjoman";
+  font-size: larger;
+  width: 100%;
+  max-width: 1300px; 
+  margin: 0 auto;   /* وسط چین */
+  padding: 1.5rem;  /* فاصله از چپ و راست */
+}
