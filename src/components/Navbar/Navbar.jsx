@@ -5,15 +5,6 @@ export default function Navbar() {
     return (
         <nav className={styles.navbar}>
 
-            <NavLink
-                to="/profile"
-                className={({ isActive }) =>
-                    `${styles.profile} ${isActive ? styles.active : styles.link}`
-                }
-            >
-                پروفایل
-            </NavLink>
-
             <div className={styles.links}>
                 <NavLink
                     to="/"
@@ -42,6 +33,17 @@ export default function Navbar() {
                     درباره ما
                 </NavLink>
             </div>
+
+            
+            <NavLink
+                to="/profile"
+                className={({ isActive }) =>
+                    `${styles.profile} ${isActive ? styles.active : styles.link}`
+                }
+            >
+                پروفایل
+            </NavLink>
+
 
         </nav>
     );

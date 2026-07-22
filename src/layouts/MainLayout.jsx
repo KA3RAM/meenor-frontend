@@ -11,8 +11,8 @@ export default function MainLayout () {
             <Background />
             
             <main className={styles.container}>
-                <Outlet/>
                 <Navbar/>
+                <Outlet/>
                 <Footer/>
             </main>
             
