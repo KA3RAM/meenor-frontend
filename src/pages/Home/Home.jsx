@@ -1,5 +1,5 @@
 import styles from "./Home.module.css"
-// import robotAnimation from "../../assets/icons/MainHome/RobotAnimation.json"
+import robotAnimation from "../../assets/icons/MainHome/RobotAnimation.json"
 
 import highspeedsvg from "../../assets/icons/MainHome/highspeed.svg"
 import tahlilsvg from "../../assets/icons/MainHome/tahlilperson.svg"
@@ -9,7 +9,7 @@ import chartSVG from "../../assets/icons/MainHome/chart.svg"
 import dataSVG from "../../assets/icons/MainHome/data.svg"
 import iconAiSVG from "../../assets/icons/MainHome/icon-ai.svg"
 import kalaSVG from "../../assets/icons/MainHome/kala.svg"
-
+import Lottie from "lottie-react";
 
 
 export default function Home() {
@@ -29,12 +29,12 @@ export default function Home() {
                 </div>
 
                 <div className={styles.lottie}>
-                   {/* <Lottie
+                   <Lottie
                        animationData={robotAnimation}
                        loop={true}
                        autoplay={true}
                        style={{ width: '100%', height: '100%'}}
-                   /> */}
+                   />
                 </div>
             </div>
 

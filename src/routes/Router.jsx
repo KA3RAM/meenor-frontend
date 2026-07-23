@@ -9,6 +9,11 @@ import AboutUs from "../pages/AboutUs/AboutUs"
 import Contact from "../pages/Contact/Contact"
 import Profile from "../pages/Profile/Profile"
 
+
+
+import AuthLayout from "../layouts/AuthLayout"
+import Login from "../pages/Login/Login"
+import Register from "../pages/Register/Register"
 export default function Router() {
     return(
         <BrowserRouter>
@@ -22,12 +27,12 @@ export default function Router() {
                     <Route path="/profile" element={<Profile />} /> 
                 </Route> 
 
-                {/* <Route element={<AuthLayout />}>
+                <Route element={<AuthLayout />}>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                 </Route>
 
-                <Route element={<ChatLayout />}>
+                {/* <Route element={<ChatLayout />}>
                     <Route path="/chat" element={<Chat />} />
                 </Route> */}
 
