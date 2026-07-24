@@ -1,0 +1,11 @@
+@font-face {
+    font-family: "Doran";
+    src: url("../assets/fonts/Doran-Medium.woff2") format("woff2");
+
+}
+
+@font-face {
+    font-family: "Anjoman";
+    src: url("../assets/fonts/Anjoman-Regular.woff") format("woff");
+
+}

@@ -1,0 +1,44 @@
+
+/* contact page */
+
+.ContactWhithUs { text-align: center; margin-bottom: 1rem; color: rgba(0,229,255,.95); }
+.intro-text { text-align: center; margin-bottom: 3rem; color: #dbeef0; line-height: 1.6; }
+
+.contact-info { display: flex; justify-content: center; gap: 2rem; margin-bottom: 4rem; flex-wrap: wrap; }
+.contact-item {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.05); backdrop-filter: blur(6px);
+    border-radius: 18px; padding: 2rem;
+    border: 1px solid rgba(255,255,255,0.08);
+    flex: 0 0 calc(15.333% - 2rem); /* هر باکس یک‌سوم عرض، با فاصله */
+    /* max-width: calc(20.333% - 2rem);  */
+    height: 180px;
+    text-align: center;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+.contact-item:hover { transform: scale(1.08); box-shadow: 0 0 25px rgba(0,180,255,.65); }
+
+.contact-item img { width: 36px; height: 36px; margin-bottom: 0.5rem; fill: rgba(0,229,255,.95); z-index: 2; }
+.contact-item a { color: rgba(0,229,255,.95); text-decoration: none; margin-top: 0.3rem; font-size: 0.95rem; word-break: break-word; z-index: 2; }
+
+/* متن مخفی */
+.contact-extra {
+    position: absolute;
+    bottom: -40px;
+    opacity: 0;
+    font-size: 0.8rem;
+    color: #dbeef0;
+    transition: all 0.4s ease;
+}
+.contact-item:hover .contact-extra {
+    bottom: 15px;
+    opacity: 1;
+}
+
+.feedback-box { background: rgba(255,255,255,0.05); backdrop-filter: blur(8px); border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); padding: 2rem; max-width: 600px; margin: 0 auto 5rem; display: flex; flex-direction: column; gap: 1rem; }
+.feedback-box h3 { margin: 0 0 0.5rem 0; color: rgba(0,229,255,.95); }
+.feedback-box textarea { width: 100%; min-height: 150px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.25); color: white; padding: 0.8rem; resize: vertical;}
+.feedback-box button {font-family: "Anjoman"; align-self: flex-end; padding: 0.6rem 1.2rem; border-radius: 12px; border: none; background: rgba(0,229,255,.95); color: #030510; font-weight: 700; cursor: pointer; transition: 0.3s; }
+.feedback-box button:hover { background: rgba(0,180,255,.65); }

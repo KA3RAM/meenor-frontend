@@ -1,0 +1,9 @@
+.containerAuth{
+    font-family: "Anjoman";
+    max-width: 1300px;
+    height: 100vh;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
