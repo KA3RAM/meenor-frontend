@@ -1,0 +1,147 @@
+.profile_wrapper {
+    width: 1200px;
+    height: max-content;
+    color: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 3rem;
+}
+.top_profile_card, .buttom_profile_card{
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.169),                 rgba(255, 255, 255, 0.059));
+    border: 1px solid rgba(255, 255, 255, 0.231);
+    box-shadow: 0 20px 60px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.04) inset;
+    backdrop-filter: blur(10px);
+}
+
+.top_profile_card{
+    width: 250px;
+    height: 700px;
+    border-bottom-right-radius: 18px;
+    border-top-right-radius: 18px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    margin-left: 7px;
+}
+
+.buttom_profile_card{
+    width: 800px;
+    height: 700px;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+}
+
+.profile_picture_wrapper{
+    width: 100%;
+    height: 500px;
+}
+.profile_picture {
+    border-top-right-radius: 18px;
+    border-top-left-radius: 5px;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    padding: 2px;
+}
+
+.account_info_wrapper {
+    margin-top: 1rem;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    direction: ltr;
+}
+
+.account_info_wrapper button {
+    width: 160px;
+    height: 48px;
+    margin-top: 18px;
+    font-family: "Anjoman";
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+
+    border: none;
+    border-radius: 12px;
+
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: all .25s ease;
+    box-shadow: 0 8px 20px rgba(34, 197, 94, .35);
+}
+
+.account_info_wrapper button:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, #34d399, #22c55e);
+    box-shadow: 0 12px 28px rgba(34, 197, 94, .45);
+}
+
+.account_info_wrapper button:active {
+    transform: scale(.97);
+}
+
+
+
+
+
+
+
+
+
+.buttom_profile_card {
+    width: 800px;
+    height: 700px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
+}
+
+
+
+
+
+
+.whishlisttag{
+    font-size: larger;
+    padding: 15px;
+}
+
+
+.whishlist_card_wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 25px;
+    padding: 0 20px 20px;
+}
+.whishlist_card {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: right;
+    justify-content: center;
+    
+    
+}
+.product_img_wrapper {
+    width: 200px;
+    height: 150px;
+}
+.product_img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    border: 2px solid rgba(206, 237, 255, 0.287);
+}
