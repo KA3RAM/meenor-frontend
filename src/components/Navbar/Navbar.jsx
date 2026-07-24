@@ -1,7 +1,13 @@
-import { NavLink } from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import styles from "./Navbar.module.css";
+import {useState} from "react";
 
 export default function Navbar() {
+
+    const [token, setToken] = useState(() => {
+        return localStorage.getItem("token") || "";
+    });
+
     return (
         <nav className={styles.navbar}>
 
@@ -36,12 +42,13 @@ export default function Navbar() {
 
             
             <NavLink
-                to="/profile"
+                to={token.length > 1 ? "/profile" : "/register"}
                 className={({ isActive }) =>
                     `${styles.profile} ${isActive ? styles.active : styles.link}`
                 }
+
             >
-                پروفایل
+                {token.length > 1 ? "پروفایل کاربری" : "ورود/ثبت نام"  }
             </NavLink>
 
 
