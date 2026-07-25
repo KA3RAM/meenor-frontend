@@ -47,8 +47,8 @@
 }
 
 .account_info_wrapper {
-    margin-top: 1rem;
-    padding: 5px;
+    /*margin-top: 1rem;*/
+    /*padding: 5px;*/
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -144,4 +144,18 @@
     height: 100%;
     border-radius: 12px;
     border: 2px solid rgba(206, 237, 255, 0.287);
+}
+
+
+.account_info_input {
+
+    width: 85%; height: 38px;
+    padding: 0 14px 0 14px;
+    border-radius: 14px;
+    /*border: 1px solid ;*/
+    background: rgba(255, 255, 255, 0.06);
+    color:#f7f8fb;
+    outline: none;
+    margin-top: 0.3rem;
+    transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
 }

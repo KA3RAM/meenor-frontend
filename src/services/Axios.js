@@ -72,6 +72,19 @@ export const add_to_wishlist_chatBot = (input) => {
 
 
 }
+export const get_all_wishlist_laptops = () => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/chatbot/wishlisted_laptops/`
+    return axios.get(url,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    });
+
+
+}
+
+
 export const like_laptop_chatbot = (input) => {
     const token = localStorage.getItem("token");
     const url = `http://127.0.0.1:8000/chatbot/like_laptop/${input}/`
@@ -112,27 +125,32 @@ export const check_if_like_chatbot = (input) => {
 
 
 
+export const get_user_profile = () => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/account/profile/`;
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    });
+}
 
+export const edit_user_profile = (input_edit_data) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/account/update/`;
+    return axios.put(url, input_edit_data ,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    });
+}
 
-
-
-// //  من اضافه کردم
-// export const get_user_profile = () => {
-//     const token = localStorage.getItem("token");
-//     const url = `http://127.0.0.1:8000/account/profile/`;
-//     return axios.get(url, {
-//         headers: {
-//             "authorization": `Token ${token}`,
-//         }
-//     });
-// }
-
-// export const edit_user_profile = (input_edit_data) => {
-//     const token = localStorage.getItem("token");
-//     const url = `http://127.0.0.1:8000/account/update/`;
-//     return axios.put(url, input_edit_data ,{
-//         headers: {
-//             "authorization": `Token ${token}`,
-//         }
-//     });
-// }
+export const edit_user_profile_password = (input_edit_data) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/account/password_update/`;
+    return axios.put(url, input_edit_data ,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    });
+}

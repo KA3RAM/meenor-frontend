@@ -2,9 +2,98 @@
 import styles from "./Register.module.css"
 import {Link, useNavigate} from "react-router-dom";
 import {useRef} from "react";
-import {login_send_data_token, register_send_data_axios} from "../../services/Axios";
+import {
+    creat_static_good_cpu,
+    creat_static_good_gpu, creat_static_good_laptop_details,
+    login_send_data_token,
+    register_send_data_axios
+} from "../../services/Axios";
 
 export default function Register() {
+
+    // -----------------------------------------------------
+
+    // const creat_good = async () => {
+    //     try {
+    //         let data_gpu ={
+    //             brand:"nvidia",
+    //             model:"rtx 5060",
+    //             architecture:"CUDA",
+    //             vram:8,
+    //             memory_type:"GDDR7",
+    //             integrated: false,
+    //             performance_score:100
+    //
+    //         }
+    //
+    //         let data_cpu = {
+    //             brand:"intel",
+    //             model:"11700k",
+    //             cores:8,
+    //             threads:16,
+    //             speed:3.60,
+    //             performance_score:100
+    //
+    //         }
+    //
+    //         let data_laptop ={
+    //             brand:"Asus",
+    //             model:"vivobook pro 15",
+    //             price:500,
+    //             cpu:1 ,
+    //             gpu:1 ,
+    //             memory_size:32,
+    //             memory_type:"DDR4",
+    //             memory_speed:2400,
+    //             extra_memory_slots:0,
+    //             storage_capacity:1000,
+    //             storage_type:"NvMe",
+    //             extra_storage_slots:0,
+    //             battery_size:10000,
+    //             battery_type:"lithiom-ion",
+    //             charger_speed:150,
+    //             charger_type:"usb_c",
+    //             resolution:"1440p",
+    //             refresh_rate:120,
+    //             display_size:12,
+    //             display_width:144,
+    //             display_height:10,
+    //             display_type:"OLED",
+    //             display_brightness:20000,
+    //             touch_screen:false,
+    //             weight:3,
+    //             thickness:40,
+    //             wifi_version:"7",
+    //             bluetooth_version:"100",
+    //             hdmi:true,
+    //             mini_displayport:false,
+    //             usb_c:2,
+    //             usb_a:2,
+    //             ethernet:false,
+    //             sd_card_slot:false
+    //
+    //         }
+    //
+    //         await creat_static_good_cpu(data_cpu);
+    //         await creat_static_good_gpu(data_gpu);
+    //         await creat_static_good_laptop_details(data_laptop);
+    //
+    //         console.log("Created");
+    //
+    //     } catch (err) {
+    //         console.error("An error occurred:", err);
+    //     }
+    //
+    //
+    // };
+    //
+    // creat_good()
+
+
+    // -----------------------------------------------------
+
+
+
     const navigate = useNavigate();
     const goToHome = () => {
         navigate("/");
@@ -43,6 +132,8 @@ export default function Register() {
 
 
     };
+
+    // localStorage.removeItem("token");
 
     const fetch_get_token = async (input_pass_and_user) => {
         try {
