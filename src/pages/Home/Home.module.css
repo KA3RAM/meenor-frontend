@@ -54,4 +54,56 @@
 .feature p { margin: 0; color: #dbeef0; line-height: 1.6; font-size: 0.95rem; text-align: center; }
 
 
+.mmm {margin-bottom: 10rem;}
 
+.tweetCard {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 20px;
+    min-height: 220px;
+    color: white;
+    transition: .3s;
+    cursor: grab;
+    height: 3rem;
+}
+
+.tweetCard:hover { 
+    border-color: rgba(0,229,255,.7);
+    box-shadow: 0 10px 30px rgba(0,229,255,.15);
+}
+
+.tweetHeader {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.tweetHeader h4 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.tweetHeader span {
+    color: #8b98a5;
+    font-size: .9rem;
+}
+
+.tweetCard p {
+    line-height: 1.8;
+    color: #e5e7eb;
+    margin-bottom: 20px;
+}
+
+.tweetCard small {
+    color: #8899a6;
+}

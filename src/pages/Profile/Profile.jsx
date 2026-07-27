@@ -115,7 +115,7 @@
 
         return (
             <div className={styles.profile_wrapper}>
-                <div className={styles.top_profile_card}>
+                <div className={`${styles.top_profile_card} ${isEditing ? styles.editing : ""}`}>
                     <div className={styles.profile_picture_wrapper}>
                         <img className={styles.profile_picture} src={image} alt="profile" />
                     </div>

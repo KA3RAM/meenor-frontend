@@ -11,6 +11,13 @@ import iconAiSVG from "../../assets/icons/MainHome/icon-ai.svg"
 import kalaSVG from "../../assets/icons/MainHome/kala.svg"
 import Lottie from "lottie-react";
 
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+
+import "swiper/css";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 export default function Home() {
     return (
@@ -65,7 +72,57 @@ export default function Home() {
                 </div>
             </div>
 
+
+
             
+                <h2 className={styles.h2tag}>نظرات کاربران</h2>
+
+                <Swiper className={styles.mmm} modules={[Autoplay]} slidesPerView={3} spaceBetween={20} loop={true}
+                autoplay={{ delay: 2500, disableOnInteraction: false, pauseOnMouseEnter: true,}}
+                breakpoints={{
+                    320: {
+                    slidesPerView: 1,
+                    },
+                    768: {
+                    slidesPerView: 2,
+                    },
+                    1024: {
+                    slidesPerView: 3,
+                    },
+                }}
+                >
+                    <SwiperSlide>
+                        <div className={styles.tweetCard}>
+                            <div className={styles.tweetHeader}>
+                                <img
+                                src="https://i.pravatar.cc/100?img=1"
+                                alt=""
+                                className={styles.avatar}
+                                />
+
+                                <div>
+                                <h4>علی رضایی</h4>
+                                <span>@alirezaei</span>
+                                </div>
+                            </div>
+
+                            <p>
+                                برای خرید لپ‌تاپ از این سایت استفاده کردم. تحلیل هوش مصنوعی واقعا
+                                کمک کرد بهترین گزینه رو پیدا کنم.
+                            </p>
+
+                            <small>۲ ساعت پیش</small>
+                        </div>
+                    </SwiperSlide>
+
+
+                </Swiper>
+
+
+
+
+
+
 
 
             <h2 className={styles.h2tag}>دمو</h2>
