@@ -14,6 +14,10 @@ import Profile from "../pages/Profile/Profile"
 import AuthLayout from "../layouts/AuthLayout"
 import Login from "../pages/Login/Login"
 import Register from "../pages/Register/Register"
+
+
+import ChatLayout from "../layouts/ChatLayout"
+import Chat from "../pages/Chat/Chat"
 export default function Router() {
     return(
         <BrowserRouter>
@@ -32,9 +36,9 @@ export default function Router() {
                     <Route path="/register" element={<Register />} />
                 </Route>
 
-                {/* <Route element={<ChatLayout />}>
+                <Route element={<ChatLayout />}>
                     <Route path="/chat" element={<Chat />} />
-                </Route> */}
+                </Route>
 
             </Routes>
         </BrowserRouter>
