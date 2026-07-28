@@ -18,6 +18,8 @@ import Register from "../pages/Register/Register"
 
 import ChatLayout from "../layouts/ChatLayout"
 import Chat from "../pages/Chat/Chat"
+import Post from "../pages/post/Post"
+import Naghdnegar from "../pages/naghdnegar/Naghdnegar"
 export default function Router() {
     return(
         <BrowserRouter>
@@ -38,6 +40,8 @@ export default function Router() {
 
                 <Route element={<ChatLayout />}>
                     <Route path="/chat" element={<Chat />} />
+                    <Route path="/naghdnegar" element={<Post />} />
+                    <Route path="/post" element={<Naghdnegar />} />
                 </Route>
 
             </Routes>

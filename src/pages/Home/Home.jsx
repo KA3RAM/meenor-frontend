@@ -1,5 +1,6 @@
 import styles from "./Home.module.css"
 import robotAnimation from "../../assets/icons/MainHome/RobotAnimation.json"
+import loading from "../../assets/icons/MainHome/Loading.json"
 
 import highspeedsvg from "../../assets/icons/MainHome/highspeed.svg"
 import tahlilsvg from "../../assets/icons/MainHome/tahlilperson.svg"
@@ -13,11 +14,27 @@ import Lottie from "lottie-react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
+import "swiper/css";
 
-import "swiper/css";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+
+
+/* -------------------------------------------------------------------------- */
+/*                                Mobile_sample                               */
+/* -------------------------------------------------------------------------- */
+import sample1 from "../../assets/images/mobile_samples/sample1.webp"
+import sample2 from "../../assets/images/mobile_samples/sample2.jpeg"
+import sample3 from "../../assets/images/mobile_samples/sample3.jpeg"
+import sample4 from "../../assets/images/mobile_samples/sample4.jpeg"
+import sample5 from "../../assets/images/mobile_samples/sample5.jpeg"
+import sample6 from "../../assets/images/mobile_samples/sample6.webp"
+import sample7 from "../../assets/images/mobile_samples/sample7.webp"
+import sample8 from "../../assets/images/mobile_samples/sample8.webp"
+
+
+
+
+
+
 
 export default function Home() {
     return (
@@ -75,52 +92,218 @@ export default function Home() {
 
 
             
-                <h2 className={styles.h2tag}>نظرات کاربران</h2>
+            <h2 className={styles.h2tagg}>بخش نقد نگار</h2>
+            <Swiper className={styles.mmm} modules={[Autoplay]} slidesPerView={3} spaceBetween={20} loop={true}
+            autoplay={{ delay: 2500, disableOnInteraction: false, pauseOnMouseEnter: true,}}
+            breakpoints={{
+                320: {
+                slidesPerView: 1,
+                },
+                768: {
+                slidesPerView: 2,
+                },
+                1024: {
+                slidesPerView: 3,
+                },
+            }}
+            >
 
-                <Swiper className={styles.mmm} modules={[Autoplay]} slidesPerView={3} spaceBetween={20} loop={true}
-                autoplay={{ delay: 2500, disableOnInteraction: false, pauseOnMouseEnter: true,}}
-                breakpoints={{
-                    320: {
-                    slidesPerView: 1,
-                    },
-                    768: {
-                    slidesPerView: 2,
-                    },
-                    1024: {
-                    slidesPerView: 3,
-                    },
-                }}
-                >
-                    <SwiperSlide>
-                        <div className={styles.tweetCard}>
-                            <div className={styles.tweetHeader}>
-                                <img
-                                src="https://i.pravatar.cc/100?img=1"
-                                alt=""
-                                className={styles.avatar}
-                                />
-
-                                <div>
-                                <h4>علی رضایی</h4>
-                                <span>@alirezaei</span>
-                                </div>
-                            </div>
-
-                            <p>
-                                برای خرید لپ‌تاپ از این سایت استفاده کردم. تحلیل هوش مصنوعی واقعا
-                                کمک کرد بهترین گزینه رو پیدا کنم.
-                            </p>
-
-                            <small>۲ ساعت پیش</small>
+                <SwiperSlide>
+                    <div className={styles.tweetCard}>
+                        <div className={styles.tweeImage}>
+                            <img src={sample4} alt="" />
                         </div>
-                    </SwiperSlide>
+                        
+                        <p>
+                            بین گلکسی اس۲۴ و شیائومی ۱۴ تی پرو مقایسه کردم. هوش مصنوعی خیلی دقیق بود و کمک کرد بهترین رو انتخاب کنم.
+                        </p>
+                        <small>۲ ساعت پیش</small>
+                        <hr />
+                        <div className={styles.tweetHeader}>
+                            <img src="https://i.pravatar.cc/100?img=38" alt="" className={styles.avatar}/>
+
+                            <div>
+                                <h4>سارا محمدی</h4>
+                                <span>sara_mohammadi@</span>
+                            </div>
+                        </div>
+                    </div>
+                </SwiperSlide>
+                
+                <SwiperSlide>
+                    <div className={styles.tweetCard}>
+                        <div className={styles.tweeImage}>
+                            <img src={sample2} alt="" />
+                        </div>
+                        
+                        <p>
+                            متاسفانه گوشی که این سایت بهم پیشنهاد داد اصلا اون چیزی نبود که انتظار داشتم. دوربینش برای عکس‌های شب خیلی ضعیف بود و باتری زود خالی میشد.
+                        </p>
+                        <small>۵ روز پیش</small>
+                        <hr />
+                        <div className={styles.tweetHeader}>
+                            <img src="https://i.pravatar.cc/100?img=15" alt="" className={styles.avatar}/>
+
+                            <div>
+                                <h4>مهدی کریمی</h4>
+                                <span>mehdikarimi@</span>
+                            </div>
+                        </div>
+                    </div>
+                </SwiperSlide>
+                
+                <SwiperSlide>
+                    <div className={styles.tweetCard}>
+                        <div className={styles.tweeImage}>
+                            <img src={sample1} alt="" />
+                        </div>
+                        
+                        <p>
+                            آیفون ۱۵ پرو مکس رو با پیکسل ۹ پرو مقایسه کردم. هوش مصنوعی همه جزئیات رو بررس کرد و انتخابم خیلی راحت شد.
+                        </p>
+                        <small>۱ هفته پیش</small>
+                        <hr />
+                        <div className={styles.tweetHeader}>
+                            <img src="https://i.pravatar.cc/100?img=8" alt="" className={styles.avatar}/>
+
+                            <div>
+                                <h4>امیرحسین نوری</h4>
+                                <span>amir_nouri@</span>
+                            </div>
+                        </div>
+                    </div>
+                </SwiperSlide>
+     
+                <SwiperSlide>
+                    <div className={styles.tweetCard}>
+                        <div className={styles.tweeImage}>
+                            <img src={sample3} alt="" />
+                        </div>
+                        
+                        <p>
+                            عالی بود، دقیقا همون گوشی رو پیدا کردم که میخواستم. مقایسه‌گر هوش مصنوعی همه گزینه‌ها رو برام بررسی کرد.
+                        </p>
+                        <small>۲ روز پیش</small>
+                        <hr />
+                        <div className={styles.tweetHeader}>
+                            <img src="https://i.pravatar.cc/100?img=10" alt="" className={styles.avatar}/>
+
+                            <div>
+                                <h4>نازنین احمدی</h4>
+                                <span>naz_ahmadi@</span>
+                            </div>
+                        </div>
+                    </div>
+                </SwiperSlide>
 
 
-                </Swiper>
+                <SwiperSlide>
+                    <div className={styles.tweetCard}>
+                        <div className={styles.tweeImage}>
+                            <img src={sample8} alt="" />
+                        </div>
+                        
+                        <p>
+                            گوشی آنر مجیک ۶ پرو رو با وان‌پلاس ۱۲ مقایسه کردم و انتخابم رو کردم. هوش مصنوعی واقعا بهم کمک کرد تا بهترین تصمیم رو بگیرم. از کیفیت ساخت تا باتری <span>...</span>
+                        </p>
+                        <small>۴ روز پیش</small>
+                        <hr />
+                        <div className={styles.tweetHeader}>
+                            <img src="https://i.pravatar.cc/100?img=12" alt="" className={styles.avatar}/>
+
+                            <div>
+                                <h4>رضا حسینی</h4>
+                                <span>reza_hosseini@</span>
+                            </div>
+                        </div>
+                    </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                    <div className={styles.tweetCard}>
+                        <div className={styles.tweeImage}>
+                            <img src={sample7} alt="" />
+                        </div>
+                        
+                        <p>
+                            خیلی خوب بود. هوش مصنوعی دقیقا فهمید من دنبال چه گوشی با چه امکاناتی هستم. پیشنهادش دقیقا همون چیزی بود که میخواستم.
+                        </p>
+                        <small>۶ روز پیش</small>
+                        <hr />
+                        <div className={styles.tweetHeader}>
+                            <img src="https://i.pravatar.cc/100?img=41" alt="" className={styles.avatar}/>
+
+                            <div>
+                                <h4>فاطمه زهرایی</h4>
+                                <span>fatemeh_zahraei@</span>
+                            </div>
+                        </div>
+                    </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                    <div className={styles.tweetCard}>
+                        <div className={styles.tweeImage}>
+                            <img src={sample6} alt="" />
+                        </div>
+                        
+                        <p>
+                            برای خرید گوشی سامسونگ گلکسی اس۲۴ اولترا و آیفون ۱۵ پرو مکس با کمک این سایت مقایسه کردم. هوش مصنوعی دقیقا نقاط قوت و ضعف<span> ... </span>
+                        </p>
+                        <small>۳ روز پیش</small>
+                        <hr />
+                        <div className={styles.tweetHeader}>
+                            <img src="https://i.pravatar.cc/100?img=52" alt="" className={styles.avatar}/>
+
+                            <div>
+                                <h4>حمید رضایی</h4>
+                                <span>hamid_rezaei@</span>
+                            </div>
+                        </div>
+                    </div>
+                </SwiperSlide>
+
+                <SwiperSlide>
+                    <div className={styles.tweetCard}>
+                        <div className={styles.tweeImage}>
+                            <img src={sample5} alt="" />
+                        </div>
+                        
+                        <p>
+                            من واقعا نمیدونستم بین این همه گوشی موبایل کدوم رو انتخاب کنم. این سایت با هوش مصنوعیش همه گزینه‌ها رو مقایسه کرد و بهترین رو بهم پیشنهاد داد.<span>...</span>
+                        </p>
+                        <small>۱ روز پیش</small>
+                        <hr />
+                        <div className={styles.tweetHeader}>
+                            <img src="https://i.pravatar.cc/100?img=20" alt="" className={styles.avatar}/>
+
+                            <div>
+                                <h4>زهرا موسوی</h4>
+                                <span>zahra_mousavi@</span>
+                            </div>
+                        </div>
+                    </div>
+                </SwiperSlide>
+            </Swiper>
 
 
 
+            <div className={styles.CTA_wrapper}>
+                <div className={styles.lottie}>
+                   <Lottie
+                       animationData={loading}
+                       loop={true}
+                       autoplay={true}
+                       style={{ width: '100%', height: '100%'}}
+                   />
+                </div>
+                <div className={styles.textCTA}>
+                   <p> دست به جنبون! وقتشه به بقیه کمک کنی تا محصول بهتری رو برای خرید انتخاب کنن.
+                    با ورود به بخش نقد نگار شما میتوانید تجربیات خودتان را با بقیه افراد به اشتراک بگذارید.</p>
 
+                    <button>نقد نگار</button>
+                </div>
+            </div>
 
 
 

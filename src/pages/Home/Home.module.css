@@ -9,7 +9,7 @@
 
 .lottie{ max-width: 500px; transform: scaleX(-1); flex: 1; }
 
-.h2tag{ text-align: center; margin-bottom: 4rem; color: white;}
+.h2tag{font-family: "Doran"; text-align: center; margin-bottom: 4rem; color: white;}
 .how_span { border-top: 3px solid rgba(0,229,255,.95); }
 .how-it-works { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 5rem; flex-wrap: wrap; }
 .larrow_svg{ margin-bottom: 4rem; }
@@ -54,56 +54,119 @@
 .feature p { margin: 0; color: #dbeef0; line-height: 1.6; font-size: 0.95rem; text-align: center; }
 
 
-.mmm {margin-bottom: 10rem;}
-
-.tweetCard {
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(255,255,255,.1);
-    backdrop-filter: blur(10px);
-    border-radius: 18px;
-    padding: 20px;
-    min-height: 220px;
-    color: white;
-    transition: .3s;
-    cursor: grab;
-    height: 3rem;
-}
-
-.tweetCard:hover { 
-    border-color: rgba(0,229,255,.7);
-    box-shadow: 0 10px 30px rgba(0,229,255,.15);
-}
-
-.tweetHeader {
+.CTA_wrapper {
+    font-family: "Doran";
     display: flex;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 18px;
+    justify-content: space-around;
+    color: white;
+    margin:1rem 0;
+    
 }
 
-.avatar {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
+.animationCTA {
+    width: 60%;
+    margin-left: 5rem;
+}
+
+.textCTA {
+    font-size: x-large;
+    width: 700px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+
+
+.textCTA button{
+    font-family: "Anjoman";
+    padding: 0.5rem;
+    width: 100px;
+    height: 40px;
+    color: rgba(0,229,255,.95);
+    font-weight: bolder;
+    border-radius: 11px;
+    outline: none;
+    border:1px solid rgba(0,229,255,.95);
+    background: none;
+    cursor: pointer;
+    
+}
+
+.textCTA button:hover {     transition: .3s; background-color: rgba(0,229,255,.95); color: #030510; border: 1px solid black;}
+
+
+
+
+.h2tagg {
+    margin: 4rem;
+    margin-top: 10rem;
+    color: white;
+    text-align: center;
+    font-family: "Doran";
+}
+.mmm {margin-bottom: 7rem;}
+
+.tweetCard {
+    background: rgba(0, 0, 0, 0.354);
+    border: 1px solid rgba(255, 255, 255, 0.166);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 10px;
+    color: white;
+    transition: .3s;
+    height: 28rem;
+}
+
+.tweeImage img {
+    border-radius: 15px;
+    width: 100%;
+    height: 210px;
     object-fit: cover;
 }
 
-.tweetHeader h4 {
-    margin: 0;
-    font-size: 1rem;
+.tweetCard p{
+    margin-top: 1rem;
+    line-height: 1.2;
+    font-size: 18px;
+    margin-bottom: 1rem;
 }
 
-.tweetHeader span {
-    color: #8b98a5;
-    font-size: .9rem;
+.tweetCard small{
+    padding: 0.7rem;
+    font-size: 18px;
+    color: grey;
+    
 }
 
-.tweetCard p {
-    line-height: 1.8;
-    color: #e5e7eb;
-    margin-bottom: 20px;
+.tweetCard hr{
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #ffffff47 30%, #ffffff3b 70%, transparent);
+    margin-top: 1rem;
+    width: 100%;
 }
 
-.tweetCard small {
-    color: #8899a6;
+
+
+
+.tweetHeader {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.747);
+    font-size: 15px;
+    margin-top: 1rem;
 }
+
+.avatar {
+    border-radius: 100%;
+    width: 45px;
+    height: 45px;
+}
+
+
