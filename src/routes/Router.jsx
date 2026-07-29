@@ -20,6 +20,10 @@ import ChatLayout from "../layouts/ChatLayout"
 import Chat from "../pages/Chat/Chat"
 import Post from "../pages/post/Post"
 import Naghdnegar from "../pages/naghdnegar/Naghdnegar"
+import Likes from "../pages/Likes/Likes"
+import Saves from "../pages/Saves/Saves"
+import Search from "../pages/Search/Search"
+
 export default function Router() {
     return(
         <BrowserRouter>
@@ -40,8 +44,11 @@ export default function Router() {
 
                 <Route element={<ChatLayout />}>
                     <Route path="/chat" element={<Chat />} />
-                    <Route path="/naghdnegar" element={<Post />} />
-                    <Route path="/post" element={<Naghdnegar />} />
+                    <Route path="/naghdnegar" element={<Naghdnegar />} />
+                    <Route path="/post" element={<Post />} />
+                    <Route path="/likes" element={<Likes />} />
+                    <Route path="/search" element={<Search />} />
+                    <Route path="/bookmarks" element={<Saves />} />
                 </Route>
 
             </Routes>
