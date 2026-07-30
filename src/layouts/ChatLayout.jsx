@@ -25,12 +25,12 @@ export default function ChatLayout() {
     const navLinks = [
         { to: "/", label: "خانه", icon: Home },
         { to: "/search", label: "جست و جو", icon: Search },
-        { to: "/likes", label: "لایک‌ها", icon: Likes },
+        { to: "/chat", label: " مقایسه با هوش مصنوعی", icon: Ai },
+        { to: "/naghdnegar", label: "نقد نگار", icon: Naghdnegar },
         { to: "/bookmarks", label: "ذخیره‌ها", icon: Saves },
-        { to: "/chat", label: "هوش مصنوعی", icon: Ai },
+        { to: "/profile", label: "ویشلیست", icon: Likes },
         { to: "/contact", label: "ارتباط با ما", icon: Contact },
         { to: "/about", label: "درباره ما", icon: AboutUs },
-        { to: "/naghdnegar", label: "نقد نگار", icon: Naghdnegar },
     ];
 
     return (

@@ -12,6 +12,8 @@
     height: max-content;
     border-radius: 14px;
     padding: 1rem;
+    margin: 0.85rem;
+    cursor: pointer;
 }
 
 
@@ -86,11 +88,11 @@
     object-fit: contain;
 }
 
-hr {
+/* hr {
     border: none;
     height: 1px;
-    background: linear-gradient(to right, transparent, #ffffff47 30%, #ffffff3b 100%, transparent);
-}
+    background: linear-gradient(to right, transparent, #ffffff47 30%, #ffffff3b 70%, transparent);
+} */
 
 /* ------------------------- Stats ------------------------- */
 .PostStats {
