@@ -13,65 +13,65 @@ export default function Register() {
 
     // -----------------------------------------------------
 
-    const creat_good = async () => {
-        try {
-            let data ={
-                "name": "Samsung Galaxy S26 Ultra",
-                "image_link": "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s26-ultra-new.jpg",
-                "network_technology": "GSM / CDMA / HSPA / EVDO / LTE / 5G",
-                "announced": "2026, February 25",
-                "body_dimensions": "163.6 x 78.1 x 7.9 mm",
-                "body_weight": "214 g",
-                "body_build": "Glass front (Corning Gorilla Armor 2), glass back (Gorilla Glass Victus 2), aluminum frame",
-                "SIM": "Nano-SIM + Nano-SIM + eSIM + eSIM (max 2 at a time) - INT\nNano-SIM + eSIM + eSIM (max 2 at a time) - USA\nNano-SIM + Nano-SIM - CN",
-                "display_type": "Dynamic LTPO AMOLED 2X",
-                "display_refresh_rate": 120,
-                "display_brightness": 2600,
-                "display_size": "[]",
-                "display_resolution": "1440 x 3120 pixels, 19.5:9 ratio (~500 ppi density)",
-                "display_protection": "Corning Gorilla Armor 2, Mohs level 6",
-                "operating_system": "Android 16, up to 7 major Android upgrades, One UI 8.5",
-                "chipset": "Qualcomm SM8850-1-AD Snapdragon 8 Elite Gen 5 (3 nm)",
-                "CPU": "Octa-core (2x4.74 GHz Oryon V3 Phoenix L + 6x3.62 GHz Oryon V3 Phoenix M)",
-                "GPU": "Adreno 840 (1.3GHz)",
-                "memory_card_slot": "No",
-                "internal_memory": "256GB 12GB RAM\n512GB 12GB RAM\n1TB 16GB RAM",
-                "back_camera": "200 MP, f/1.4, 23mm (wide), 1/1.3\", 0.6µm, multi-directional PDAF, OIS\n10 MP, f/2.4, 67mm (telephoto), 1/3.94\", 1.0µm, PDAF, OIS, 3x optical zoom\n50 MP, f/2.9, 111mm (periscope telephoto), 1/2.52\", 0.7µm, PDAF, OIS, 5x optical zoom\n50 MP, f/1.9, 120˚ (ultrawide), 1/2.5\", 0.7µm, dual pixel PDAF, Super Steady video",
-                "back_camera_features": "Laser AF, Best Face, Horizon Lock, LED flash, auto-HDR, panorama",
-                "back_camera_video": "8K@24/30fps\n4K@30/60/120fps\n1080p@30/60/120/240fps",
-                "selfie_camera": "12 MP, f/2.2, 23mm (wide), 1/3.2\", 1.12µm, dual pixel PDAF",
-                "selfie_camera_video": "4K@30/60fps\n1080p@30fps",
-                "loudspeaker": "Yes, with stereo speakers",
-                "headphone_jack": "No",
-                "bluetooth": "6.0, A2DP, LE",
-                "positioning": "GPS, GLONASS, BDS, GALILEO, QZSS",
-                "NFC": "Yes",
-                "USB": "USB Type-C 3.2, DisplayPort 1.2, OTG",
-                "sensors": "Fingerprint (under display, ultrasonic), accelerometer, gyro, proximity, compass, barometer",
-                "battery_type": "Li-Ion",
-                "battery_size": 5000,
-                "wired_charging_speed": 60,
-                "charging": "60W wired, PD3.0, 75% in 30 min\n25W wireless (Qi2.2)\n4.5W reverse wireless",
-                "colors": "Cobalt Violet, Sky Blue, Black, White, Silver Shadow, Pink Gold",
-                "price": 1,
-                "AnTuTu": 2627986,
-                "GeekBench": 11566
-            }
-
-
-            await creat_static_good_phone_details(data);
-
-            console.log("Created");
-
-        } catch (err) {
-            console.error("STATUS:", err.response?.status);
-            console.error("ERROR DATA:", err.response?.data);
-            console.error("ERROR:", err);        }
-
-
-    };
-
-    creat_good()
+    // const creat_good = async () => {
+    //     try {
+    //         let data ={
+    //             "name": "Samsung Galaxy S25 Ultra",
+    //             "image_link": "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s26-ultra-new.jpg",
+    //             "network_technology": "GSM / CDMA / HSPA / EVDO / LTE / 5G",
+    //             "announced": "2026, February 25",
+    //             "body_dimensions": "163.6 x 78.1 x 7.9 mm",
+    //             "body_weight": "214 g",
+    //             "body_build": "Glass front (Corning Gorilla Armor 2), glass back (Gorilla Glass Victus 2), aluminum frame",
+    //             "SIM": "Nano-SIM + Nano-SIM + eSIM + eSIM (max 2 at a time) - INT\nNano-SIM + eSIM + eSIM (max 2 at a time) - USA\nNano-SIM + Nano-SIM - CN",
+    //             "display_type": "Dynamic LTPO AMOLED 2X",
+    //             "display_refresh_rate": 100,
+    //             "display_brightness": 1600,
+    //             "display_size": "[]",
+    //             "display_resolution": "1440 x 3120 pixels, 19.5:9 ratio (~500 ppi density)",
+    //             "display_protection": "Corning Gorilla Armor 2, Mohs level 6",
+    //             "operating_system": "Android 16, up to 7 major Android upgrades, One UI 8.5",
+    //             "chipset": "Qualcomm SM8850-1-AD Snapdragon 8 Elite Gen 5 (3 nm)",
+    //             "CPU": "Octa-core (2x4.74 GHz Oryon V3 Phoenix L + 6x3.62 GHz Oryon V3 Phoenix M)",
+    //             "GPU": "Adreno 840 (1.3GHz)",
+    //             "memory_card_slot": "No",
+    //             "internal_memory": "256GB 12GB RAM\n512GB 12GB RAM\n1TB 16GB RAM",
+    //             "back_camera": "200 MP, f/1.4, 23mm (wide), 1/1.3\", 0.6µm, multi-directional PDAF, OIS\n10 MP, f/2.4, 67mm (telephoto), 1/3.94\", 1.0µm, PDAF, OIS, 3x optical zoom\n50 MP, f/2.9, 111mm (periscope telephoto), 1/2.52\", 0.7µm, PDAF, OIS, 5x optical zoom\n50 MP, f/1.9, 120˚ (ultrawide), 1/2.5\", 0.7µm, dual pixel PDAF, Super Steady video",
+    //             "back_camera_features": "Laser AF, Best Face, Horizon Lock, LED flash, auto-HDR, panorama",
+    //             "back_camera_video": "8K@24/30fps\n4K@30/60/120fps\n1080p@30/60/120/240fps",
+    //             "selfie_camera": "12 MP, f/2.2, 23mm (wide), 1/3.2\", 1.12µm, dual pixel PDAF",
+    //             "selfie_camera_video": "4K@30/60fps\n1080p@30fps",
+    //             "loudspeaker": "Yes, with stereo speakers",
+    //             "headphone_jack": "No",
+    //             "bluetooth": "6.0, A2DP, LE",
+    //             "positioning": "GPS, GLONASS, BDS, GALILEO, QZSS",
+    //             "NFC": "Yes",
+    //             "USB": "USB Type-C 3.2, DisplayPort 1.2, OTG",
+    //             "sensors": "Fingerprint (under display, ultrasonic), accelerometer, gyro, proximity, compass, barometer",
+    //             "battery_type": "Li-Ion",
+    //             "battery_size": 7000,
+    //             "wired_charging_speed": 30,
+    //             "charging": "60W wired, PD3.0, 75% in 30 min\n25W wireless (Qi2.2)\n4.5W reverse wireless",
+    //             "colors": "Cobalt Violet, Sky Blue, Black, White, Silver Shadow, Pink Gold",
+    //             "price": 520000,
+    //             "AnTuTu": 27986,
+    //             "GeekBench": 1156
+    //         }
+    //
+    //
+    //         await creat_static_good_phone_details(data);
+    //
+    //         console.log("Created");
+    //
+    //     } catch (err) {
+    //         console.error("STATUS:", err.response?.status);
+    //         console.error("ERROR DATA:", err.response?.data);
+    //         console.error("ERROR:", err);        }
+    //
+    //
+    // };
+    //
+    // creat_good()
 
 
     // -----------------------------------------------------

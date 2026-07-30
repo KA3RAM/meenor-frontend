@@ -14,72 +14,269 @@ const SEARCH_DEBOUNCE_MS = 300;
 
 
 
-/* ------------------------- comparison chart + table ------------------------- */
+/* ------------------------- comparison table + spec sheet ------------------------- */
 
-// این تابع فعلاً دیتای فرضی می‌سازه — بعداً همینجا رو با جواب واقعی جایگزین کنید
-function generateMockComparisonRows(count = 8) {
-    return Array.from({ length: count }, (_, i) => ({
-        label: `ویژگی ${i + 1}`,
-        valueA: Math.round(90 - i * 8 + Math.random() * 10),
-        valueB: Math.round(85 - i * 7 + Math.random() * 12),
-    }));
+// لیبل فارسی برای فیلدهایی که از قبل می‌شناسیم (چه عددی چه متنی).
+// هر فیلد جدیدی که بک‌اند به مدل محصول اضافه کرد، اگه اینجا نباشه هم مشکلی نیست —
+// خودکار با یه لیبل ساخته‌شده از اسم فیلد (prettifyKey) نمایش داده می‌شه.
+const FIELD_LABELS = {
+    // فیلدهای عددی
+    display_refresh_rate: "نرخ رفرش نمایشگر (Hz)",
+    display_brightness: "روشنایی نمایشگر (nit)",
+    battery_size: "ظرفیت باتری (mAh)",
+    wired_charging_speed: "سرعت شارژ سیمی (وات)",
+    price: "قیمت",
+    AnTuTu: "امتیاز AnTuTu",
+    GeekBench: "امتیاز GeekBench",
+    // فیلدهای متنی
+    network_technology: "فناوری شبکه",
+    announced: "تاریخ معرفی",
+    body_dimensions: "ابعاد بدنه",
+    body_weight: "وزن بدنه",
+    body_build: "بدنه و متریال",
+    SIM: "نوع سیم‌کارت",
+    display_type: "نوع نمایشگر",
+    display_resolution: "رزولوشن نمایشگر",
+    display_protection: "محافظ نمایشگر",
+    operating_system: "سیستم‌عامل",
+    chipset: "چیپست",
+    CPU: "پردازنده (CPU)",
+    GPU: "پردازنده گرافیکی (GPU)",
+    memory_card_slot: "اسلات کارت حافظه",
+    internal_memory: "حافظه داخلی",
+    back_camera: "دوربین پشت",
+    back_camera_features: "امکانات دوربین پشت",
+    back_camera_video: "ویدیوی دوربین پشت",
+    selfie_camera: "دوربین سلفی",
+    selfie_camera_video: "ویدیوی دوربین سلفی",
+    loudspeaker: "بلندگو",
+    headphone_jack: "جک هدفون",
+    bluetooth: "بلوتوث",
+    positioning: "موقعیت‌یاب (GPS)",
+    NFC: "ان‌اف‌سی (NFC)",
+    USB: "پورت USB",
+    sensors: "سنسورها",
+    battery_type: "نوع باتری",
+    charging: "شارژ",
+    colors: "رنگ‌بندی",
+};
+
+// این فیلدها اصلاً وارد مقایسه نمی‌شن چون جای دیگه‌ای (هدر/تصویر) نمایش داده می‌شن یا بی‌معنی‌ان.
+const EXCLUDED_FIELDS = new Set(["id", "name", "image_link"]);
+
+// برای این فیلدهای عددی، عدد کمتر یعنی برنده (مثلاً قیمت پایین‌تر بهتره).
+// بقیه‌ی فیلدهای عددی پیش‌فرض «عدد بیشتر = برنده» هستن.
+const LOWER_IS_BETTER = new Set(["price"]);
+
+// اگه فیلدی توی FIELD_LABELS نبود، از روی اسم خودش یه لیبل خوانا می‌سازه
+// (مثلاً "extra_storage_slots" -> "Extra Storage Slots")
+function prettifyKey(key) {
+    return key
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+function fieldLabel(key) {
+    return FIELD_LABELS[key] || prettifyKey(key);
+}
 
-function ComparisonBlock({ nameA, nameB, rows }) {
-    const maxValue = Math.max(...rows.map((r) => Math.max(r.valueA, r.valueB)));
+// یه مقدار "خالی/بی‌معنی" حساب می‌شه اگه نال/undefined/رشته‌ی خالی/آرایه‌ی خالی سریالایز شده باشه
+// (توی دیتای نمونه‌مون مثلاً display_size مقدار "[]" داشت که عملاً یعنی خالیه)
+function isEmptyValue(v) {
+    return (
+        v === null ||
+        v === undefined ||
+        v === "" ||
+        v === "[]" ||
+        (Array.isArray(v) && v.length === 0)
+    );
+}
+
+// از روی دو آبجکتِ کاملِ محصول، همه‌ی کلیدهای مشترک/موجود رو به دو گروه تقسیم می‌کنه:
+// - numericRows: فیلدهایی که عدد هستن → برای جدول مقایسه‌ای با رنگ‌بندی برنده/بازنده
+// - textRows: فیلدهایی که عدد نیستن → برای جدول مشخصات کامل پایین
+function buildComparisonSections(productA, productB) {
+    if (!productA || !productB) return { numericRows: [], textRows: [] };
+
+    // ترتیب رو اول از روی FIELD_LABELS (فیلدهای شناخته‌شده) می‌سازیم تا نمایش
+    // همیشه یه چیدمان قابل‌پیش‌بینی داشته باشه، بعد هر فیلد ناشناخته‌ی دیگه‌ای
+    // که توی جیسون بود ولی توی این لیست نبود رو هم به انتها اضافه می‌کنیم.
+    const knownKeys = Object.keys(FIELD_LABELS);
+    const allKeys = new Set([
+        ...knownKeys,
+        ...Object.keys(productA),
+        ...Object.keys(productB),
+    ]);
+
+    const numericRows = [];
+    const textRows = [];
+
+    for (const key of allKeys) {
+        if (EXCLUDED_FIELDS.has(key)) continue;
+
+        const valueA = productA[key];
+        const valueB = productB[key];
+
+        if (isEmptyValue(valueA) && isEmptyValue(valueB)) continue;
+
+        const isNumericField =
+            typeof valueA === "number" || typeof valueB === "number";
+
+        if (isNumericField) {
+            if (typeof valueA !== "number" || typeof valueB !== "number") continue; // یکی از دو محصول این فیلد رو نداره، قابل مقایسه نیست
+            const lowerIsBetter = LOWER_IS_BETTER.has(key);
+            let winner = null;
+            if (valueA !== valueB) {
+                const aIsBetter = lowerIsBetter ? valueA < valueB : valueA > valueB;
+                winner = aIsBetter ? "A" : "B";
+            }
+            numericRows.push({ key, label: fieldLabel(key), valueA, valueB, winner });
+        } else {
+            if (isEmptyValue(valueA) && isEmptyValue(valueB)) continue;
+            textRows.push({
+                key,
+                label: fieldLabel(key),
+                valueA: isEmptyValue(valueA) ? "—" : String(valueA),
+                valueB: isEmptyValue(valueB) ? "—" : String(valueB),
+            });
+        }
+    }
+
+    // فیلدهای شناخته‌شده رو طبق ترتیب تعریف‌شده جلو می‌آریم، بقیه (فیلدهای ناشناخته) همون ترتیب طبیعی می‌مونن
+    const orderIndex = (k) => {
+        const idx = knownKeys.indexOf(k);
+        return idx === -1 ? knownKeys.length : idx;
+    };
+    numericRows.sort((a, b) => orderIndex(a.key) - orderIndex(b.key));
+    textRows.sort((a, b) => orderIndex(a.key) - orderIndex(b.key));
+
+    return { numericRows, textRows };
+}
+
+function ComparisonBlock({ productA, productB }) {
+    if (!productA || !productB) return null;
+
+    const nameA = productA.name;
+    const nameB = productB.name;
+    const { numericRows, textRows } = buildComparisonSections(productA, productB);
 
     return (
         <div className={styles.comparisonWrapper}>
             <div className={styles.comparisonHeader}>
-                <span className={styles.comparisonHeaderA}>{nameA}</span>
-                <span className={styles.comparisonHeaderB}>{nameB}</span>
+                <div className={styles.comparisonHeaderSide}>
+                    {productA.image_link && (
+                        <img
+                            className={styles.comparisonProductImage}
+                            src={productA.image_link}
+                            alt={nameA}
+                        />
+                    )}
+                    <span className={styles.comparisonHeaderA}>{nameA}</span>
+                </div>
+                <div className={styles.comparisonHeaderSide}>
+                    {productB.image_link && (
+                        <img
+                            className={styles.comparisonProductImage}
+                            src={productB.image_link}
+                            alt={nameB}
+                        />
+                    )}
+                    <span className={styles.comparisonHeaderB}>{nameB}</span>
+                </div>
             </div>
 
-            <div className={styles.comparisonChart}>
-                {rows.map((row, i) => (
-                    <div key={i} className={styles.comparisonRow}>
-                        <div className={styles.barSideA}>
-                            <span className={styles.barValueA}>{row.valueA}</span>
-                            <div
-                                className={styles.barA}
-                                style={{ width: `${(row.valueA / maxValue) * 100}%` }}
-                            />
-                        </div>
-                        <div className={styles.comparisonLabel}>{row.label}</div>
-                        <div className={styles.barSideB}>
-                            <div
-                                className={styles.barB}
-                                style={{ width: `${(row.valueB / maxValue) * 100}%` }}
-                            />
-                            <span className={styles.barValueB}>{row.valueB}</span>
-                        </div>
+            {/* نمودار مقایسه‌ای عددی — ساید‌بای‌ساید، رنگ برنده‌ی هر ردیف فیروزه‌ای، بازنده قرمز */}
+            {numericRows.length > 0 && (
+                <>
+                    <h4 className={styles.compareSectionTitle}>مقایسه‌ی مشخصات فنی</h4>
+                    <div className={styles.comparisonChart}>
+                        {numericRows.map((row) => {
+                            // مقیاسِ هر ردیف مستقل از بقیه‌ست، چون واحدها خیلی متفاوتن
+                            // (مثلاً AnTuTu میلیونیه ولی نرخ رفرش صددوتاییه) — اگه یه
+                            // مقیاس مشترک برای همه‌ی ردیف‌ها استفاده کنیم، بارهای
+                            // ردیف‌های با عدد کوچیک عملاً دیده نمی‌شن.
+                            const rowMax = Math.max(row.valueA, row.valueB) || 1;
+
+                            const barClassA =
+                                row.winner === "A"
+                                    ? styles.barWinner
+                                    : row.winner === "B"
+                                        ? styles.barLoser
+                                        : styles.barNeutralA;
+                            const barClassB =
+                                row.winner === "B"
+                                    ? styles.barWinner
+                                    : row.winner === "A"
+                                        ? styles.barLoser
+                                        : styles.barNeutralB;
+                            const valueClassA =
+                                row.winner === "A"
+                                    ? styles.valueWinner
+                                    : row.winner === "B"
+                                        ? styles.valueLoser
+                                        : "";
+                            const valueClassB =
+                                row.winner === "B"
+                                    ? styles.valueWinner
+                                    : row.winner === "A"
+                                        ? styles.valueLoser
+                                        : "";
+
+                            return (
+                                <div key={row.key} className={styles.comparisonRow}>
+                                    <div className={styles.barSideA}>
+                                        <span className={`${styles.barValueA} ${valueClassA}`}>
+                                            {row.valueA.toLocaleString()}
+                                        </span>
+                                        <div
+                                            className={`${styles.bar} ${barClassA}`}
+                                            style={{ width: `${(row.valueA / rowMax) * 100}%` }}
+                                        />
+                                    </div>
+                                    <div className={styles.comparisonLabel}>{row.label}</div>
+                                    <div className={styles.barSideB}>
+                                        <div
+                                            className={`${styles.bar} ${barClassB}`}
+                                            style={{ width: `${(row.valueB / rowMax) * 100}%` }}
+                                        />
+                                        <span className={`${styles.barValueB} ${valueClassB}`}>
+                                            {row.valueB.toLocaleString()}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
-                ))}
-            </div>
+                </>
+            )}
 
-            <table className={styles.compareTable}>
-                <thead>
-                    <tr>
-                        <th>ویژگی</th>
-                        <th>{nameA}</th>
-                        <th>{nameB}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows.map((row, i) => (
-                        <tr key={i}>
-                            <td>{row.label}</td>
-                            <td>{row.valueA}</td>
-                            <td>{row.valueB}</td>
+            {/* سایر مشخصات (غیرعددی) — همه‌ی فیلدهای متنیِ موجود توی دیتای محصول */}
+            {textRows.length > 0 && (
+                <>
+                    <h4 className={styles.compareSectionTitle}>سایر مشخصات</h4>
+                    <table className={styles.specTable}>
+                        <thead>
+                        <tr>
+                            <th>ویژگی</th>
+                            <th>{nameA}</th>
+                            <th>{nameB}</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                        {textRows.map((row) => (
+                            <tr key={row.key}>
+                                <td>{row.label}</td>
+                                <td className={styles.specValue}>{row.valueA}</td>
+                                <td className={styles.specValue}>{row.valueB}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </>
+            )}
         </div>
     );
 }
-
 
 
 function ProductAutocomplete({ value, onChange, onSelectProduct, placeholder }) {
@@ -241,11 +438,13 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
 
     function handleStartCompare(e) {
         e.preventDefault();
-        if (!productA.trim() || !productB.trim()) return;
+        // برای مقایسه‌ی واقعی، صرفاً متن تایپ‌شده کافی نیست؛ باید کاربر واقعاً
+        // یکی از پیشنهادهای dropdown رو انتخاب کرده باشه تا آبجکت کامل محصول
+        // (شامل id و مشخصات) رو داشته باشیم. اگه انتخاب نشده، اینجا متوقف می‌شیم.
+        if (!selectedProductA || !selectedProductB) return;
 
-        const a = productA.trim();
-        const b = productB.trim();
-        const rows = generateMockComparisonRows(); // ← بعداً جای این، دیتای واقعی از سرور
+        const a = selectedProductA.name;
+        const b = selectedProductB.name;
 
         morphTo("chat", () => {
             onCompare?.(a, b, { productA: selectedProductA, productB: selectedProductB });
@@ -255,9 +454,8 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
                     id: Date.now(),
                     role: "assistant",
                     type: "comparison",
-                    nameA: a,
-                    nameB: b,
-                    rows,
+                    productA: selectedProductA,
+                    productB: selectedProductB,
                 },
                 {
                     id: Date.now() + 1,
@@ -316,7 +514,7 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
                     {messages.map((m) =>
                         m.type === "comparison" ? (
                             <div key={m.id} className={`${styles.comparisonBubble}`}>
-                                <ComparisonBlock nameA={m.nameA} nameB={m.nameB} rows={m.rows} />
+                                <ComparisonBlock productA={m.productA} productB={m.productB} />
                             </div>
                         ) : (
                             <div
@@ -363,10 +561,17 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
                             />
                         </div>
 
+                        {(productA.trim() && !selectedProductA) ||
+                        (productB.trim() && !selectedProductB) ? (
+                            <p className={styles.compareHint}>
+                                لطفاً محصول رو از لیست پیشنهادها انتخاب کن.
+                            </p>
+                        ) : null}
+
                         <button
                             type="submit"
                             className={styles.primaryButton}
-                            disabled={!productA.trim() || !productB.trim()}
+                            disabled={!selectedProductA || !selectedProductB}
                         >
                             شروع مقایسه
                             <SendIcon />

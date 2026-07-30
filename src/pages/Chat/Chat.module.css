@@ -234,6 +234,12 @@
     cursor: not-allowed;
 }
 
+.compareHint {
+    color: #f4b400;
+    font-size: 13px;
+    margin: 0;
+}
+
 /* ------------------------------- chat card ------------------------------ */
 
 .chatCard {
@@ -339,13 +345,40 @@
 .comparisonHeader {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-weight: 700;
     font-size: 15px;
     padding: 0 0.25rem;
+    gap: 1rem;
+}
+
+.comparisonHeaderSide {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.comparisonProductImage {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    background: #ffffff;
+    border-radius: 8px;
+    flex-shrink: 0;
 }
 
 .comparisonHeaderA { color: #1d9bf0; }
 .comparisonHeaderB { color: #f4b400; }
+
+.compareSectionTitle {
+    margin: 0.25rem 0 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #a7a9ac;
+}
+
+/* ------------------------ نمودار عددیِ ساید‌بای‌ساید ------------------------ */
 
 .comparisonChart {
     display: flex;
@@ -374,20 +407,36 @@
     gap: 0.4rem;
 }
 
-.barA, .barB {
+.bar {
     height: 14px;
     border-radius: 6px;
     min-width: 4px;
-    transition: width 0.4s ease;
+    transition: width 0.4s ease, background-color 0.2s ease;
 }
 
-.barA { background: #1d9bf0; }
-.barB { background: #f4b400; }
+/* رنگ خنثی، وقتی دو محصول توی این ویژگی مساوی‌ان (نه برنده نه بازنده) */
+.barNeutralA { background: #1d9bf0; }
+.barNeutralB { background: #f4b400; }
+
+/* برنده‌ی ردیف: سبز فیروزه‌ای */
+.barWinner { background: #2dd4bf; }
+/* بازنده‌ی ردیف: قرمز */
+.barLoser { background: #ef4444; }
 
 .barValueA, .barValueB {
     font-size: 11px;
     color: #a7a9ac;
     flex-shrink: 0;
+}
+
+.valueWinner {
+    color: #2dd4bf;
+    font-weight: 700;
+}
+
+.valueLoser {
+    color: #ef4444;
+    font-weight: 700;
 }
 
 .comparisonLabel {
@@ -397,8 +446,9 @@
     white-space: nowrap;
 }
 
-/* جدول شبیه اکسل با تم توییتر */
-.compareTable {
+/* ------------------------- جدول سایر مشخصات (متنی) ------------------------- */
+/* جدول شبیه اکسل با تم توییتر — این بخش رو دست نزن، همون‌طور که هست خوبه */
+.specTable {
     width: 100%;
     border-collapse: collapse;
     background: #000000;
@@ -408,25 +458,33 @@
     font-size: 13px;
 }
 
-.compareTable th,
-.compareTable td {
+.specTable th,
+.specTable td {
     border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 0.55rem 0.75rem;
     text-align: center;
 }
 
-.compareTable thead th {
+.specTable thead th {
     background: rgba(29, 155, 240, 0.12);
     color: #1d9bf0;
     font-weight: 700;
 }
 
-.compareTable tbody tr:nth-child(even) {
+.specTable tbody tr:nth-child(even) {
     background: rgba(255, 255, 255, 0.03);
 }
 
-.compareTable tbody tr:hover {
+.specTable tbody tr:hover {
     background: rgba(255, 255, 255, 0.06);
+}
+
+/* فیلدهای متنیِ سایر مشخصات ممکنه چندخطی باشن (مثل SIM یا دوربین) */
+.specValue {
+    white-space: pre-line;
+    text-align: center;
+    font-size: 12.5px;
+    line-height: 1.6;
 }
 
 /* -------------------------------- mobile -------------------------------- */
