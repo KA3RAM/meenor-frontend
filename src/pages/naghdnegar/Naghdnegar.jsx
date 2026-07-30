@@ -9,12 +9,13 @@ import locck from "../../assets/images/Lock.jpg"
 import sample1 from "../../assets/images/mobile_samples/sample2.jpeg"
 
 /* ---------------------------------- LOGOS --------------------------------- */
-import Likes from "../../assets/icons/PostImages/Likes.svg"
+
 import Coments from "../../assets/icons/PostImages/Coments.svg"
 import Views from "../../assets/icons/PostImages/Views.svg"
 import ThreeDots from "../../assets/icons/PostImages/Threedots.svg"
 import Saves from "../../assets/icons/PostImages/Saves.svg"
 import Share from "../../assets/icons/PostImages/Share.svg"
+import Likes from "../../assets/icons/Sidebar/likes.svg"
 
 export default function Naghdnegar() {
     return(
@@ -91,118 +92,6 @@ export default function Naghdnegar() {
 
 
 
-
-
-
-
-
-            <div className={styles.UserPost}>
-
-                <div className={styles.RepostedBy}>
-                    <p>Elon Musk reposted</p>
-                </div>
-
-                <div className={styles.PostHeader}>
-                    <div className={styles.HeaderInfo}>
-                        <p className={styles.Name}>Arthur MacWaters</p>
-                        <p className={styles.Handle}>@ArthurMacwaters</p>
-                        <span className={styles.Dot}>·</span>
-                        <p className={styles.Date}>Jul 28</p>
-                    </div>
-
-                    <button className={styles.ThreeDots}>
-                        <img src={ThreeDots} alt="" />
-                    </button>
-                </div>
-
-                <div className={styles.PostContentWrapper}>
-                    <p>Humans for scale</p>
-                </div>
-
-                <div className={styles.PostImgWrapper}>
-                    <img className={styles.PostImg} src={lock} alt="" />
-                </div>
-
-                <div className={styles.PostStats}>
-                    <div className={styles.LeftSide}>
-                        <button className={styles.ComentsWrapper}>
-                            <img src={Coments} alt="" />
-                            <p>307</p>
-                        </button>
-
-                        <button className={styles.SavesWrapper}>
-                            <img src={Saves} alt="" />
-                            <p>571</p>
-                        </button>
-
-                        <button className={styles.LikesWrapper}>
-                            <img src={Likes} alt="" />
-                            <p>4.7K</p>
-                        </button>
-
-                        <button className={styles.ViewsWrapper}>
-                            <img src={Views} alt="" />
-                            <p>417K</p>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
-
-
-            <div className={styles.UserPost}>
-
-                <div className={styles.RepostedBy}>
-                    <p>Elon Musk reposted</p>
-                </div>
-
-                <div className={styles.PostHeader}>
-                    <div className={styles.HeaderInfo}>
-                        <p className={styles.Name}>Arthur MacWaters</p>
-                        <p className={styles.Handle}>@ArthurMacwaters</p>
-                        <span className={styles.Dot}>·</span>
-                        <p className={styles.Date}>Jul 28</p>
-                    </div>
-
-                    <button className={styles.ThreeDots}>
-                        <img src={ThreeDots} alt="" />
-                    </button>
-                </div>
-
-                <div className={styles.PostContentWrapper}>
-                    <p>Humans for scale</p>
-                </div>
-
-                <div className={styles.PostImgWrapper}>
-                    <img className={styles.PostImg} src={lock} alt="" />
-                </div>
-
-                <div className={styles.PostStats}>
-                    <div className={styles.LeftSide}>
-                        <button className={styles.ComentsWrapper}>
-                            <img src={Coments} alt="" />
-                            <p>307</p>
-                        </button>
-
-                        <button className={styles.SavesWrapper}>
-                            <img src={Saves} alt="" />
-                            <p>571</p>
-                        </button>
-
-                        <button className={styles.LikesWrapper}>
-                            <img src={Likes} alt="" />
-                            <p>4.7K</p>
-                        </button>
-
-                        <button className={styles.ViewsWrapper}>
-                            <img src={Views} alt="" />
-                            <p>417K</p>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
         </div>
     )
 }

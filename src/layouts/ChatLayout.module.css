@@ -213,7 +213,7 @@
 /* ریسپانسیو برای موبایل */
 @media (max-width: 768px) {
     .sidebar {
-        width: 80px;
+        width: 65px;
         padding: 1rem 0.5rem;
     }
 
@@ -223,7 +223,7 @@
     }
 
     .logo::after {
-        content: 'ن';
+        content: '';
         font-size: 28px;
         -webkit-text-fill-color: #fff;
         padding-right: 8px;
@@ -270,8 +270,8 @@
     }
 
     .ProfileCard {
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
     }
 
     .active::before {
@@ -281,7 +281,7 @@
 /* ========================= EXTRA SMALL SCREENS ========================= */
 @media (max-width: 380px) {
     .sidebar {
-        width: 64px;
+        width: 50px;
         padding: 0.75rem 0.35rem;
     }
 
@@ -291,12 +291,17 @@
     }
 
     .SendPostButton {
-        width: 42px;
-        height: 42px;
+        width: 40px;
+        height: 40px;
     }
 
     .ProfileCard {
-        width: 34px;
-        height: 34px;
+        position: fixed;
+        top: 0;
+        right: 0;
+        margin: 0.7rem;
+        
+        width: 30px;
+        height: 30px;
     }
 }

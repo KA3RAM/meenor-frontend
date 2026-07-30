@@ -60,6 +60,16 @@ export default function Navbar() {
                 </NavLink>
 
                 <NavLink
+                    to="/naghdnegar"
+                    onClick={closeMenu}
+                    className={({ isActive }) =>
+                        isActive ? styles.active : styles.link
+                    }
+                >
+                    نقد نگار
+                </NavLink>
+
+                <NavLink
                     to={token.length > 1 ? "/profile" : "/register"}
                     onClick={closeMenu}
                     className={({ isActive }) =>
