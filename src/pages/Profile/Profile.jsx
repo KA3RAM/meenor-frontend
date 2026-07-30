@@ -8,11 +8,18 @@ get_user_profile,
 login_send_data_token
 } from "../../services/Axios";
 import {useEffect, useRef, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 
 
 export default function Profile() {
 
+
+    const navigate = useNavigate();
+    const goToRegister = () => {
+        navigate("/register");
+
+    }
     const [listOfWishlist, setWishlist] = useState([])
     const [usersInfo, setUsersInfo] = useState({})
     const [isEditing, setIsEditing] = useState(false)
@@ -30,7 +37,10 @@ export default function Profile() {
     })
 
 
-
+    const removeToken = () => {
+        localStorage.removeItem("token");
+        goToRegister()
+    }
 
     const fetch_put_user_info = async () => {
         try{
@@ -44,7 +54,7 @@ export default function Profile() {
             }
 
             let {data : data} = await edit_user_profile(data_profile)
-            if(editUserInfoPassWord.length > 0){
+            if (editUserInfoPassWord.password?.length > 0){
                 try{
                     let {data: dataPassword} = await edit_user_profile_password(data_profile_password)
                     console.log(dataPassword + "" + "Soroush Is God")
@@ -167,6 +177,9 @@ export default function Profile() {
 
                         <button
                             className={styles.logout_button}
+                            onClick={() => {
+                                removeToken()
+                            }}
                         >
                             خروج از حساب
                         </button>
@@ -180,7 +193,9 @@ export default function Profile() {
                         <button onClick={() => (setIsEditing(true))}>ویرایش</button>
                             <button
                             className={styles.logout_button}
-                            
+                            onClick={() => {
+                                removeToken()
+                            }}
                         >
                             خروج از حساب
                         </button>

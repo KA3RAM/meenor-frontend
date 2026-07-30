@@ -117,7 +117,6 @@ export default function Register() {
 
     };
 
-    // localStorage.removeItem("token");
 
     const fetch_get_token = async (input_pass_and_user) => {
         try {

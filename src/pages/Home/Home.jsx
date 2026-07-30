@@ -29,6 +29,7 @@ import sample5 from "../../assets/images/mobile_samples/sample5.jpeg"
 import sample6 from "../../assets/images/mobile_samples/sample6.webp"
 import sample7 from "../../assets/images/mobile_samples/sample7.webp"
 import sample8 from "../../assets/images/mobile_samples/sample8.webp"
+import {useNavigate} from "react-router-dom";
 
 
 
@@ -37,6 +38,13 @@ import sample8 from "../../assets/images/mobile_samples/sample8.webp"
 
 
 export default function Home() {
+
+    const navigate = useNavigate();
+    const goToChat = () => {
+        navigate("/chat");
+
+    }
+
     return (
         <div>
             <div className={styles["hero-txt"]}>
@@ -44,7 +52,7 @@ export default function Home() {
                     <h1>اسم محصولاتت رو وارد کن، هوش مصنوعی میگه کدوم به‌صرفه‌تره!</h1>
                     <div className={styles["cta-buttons"]}>
                             {/*  onClick={gotoChat}   */}
-                        <button                   className={`${styles.btn} ${styles["btn-primary"]}`}>شروع کنید</button>
+                        <button onClick={goToChat} className={`${styles.btn} ${styles["btn-primary"]}`}>شروع کنید</button>
                         <button className={`${styles.btn} ${styles["btn-secondary"]}`}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M12 16l4-5h-3V4h-2v7H8l4 5zm8-2v6H4v-6H2v8h20v-8h-2z"/></svg>
                             دانلود اپ

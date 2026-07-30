@@ -356,7 +356,7 @@ function ProductAutocomplete({ value, onChange, onSelectProduct, placeholder }) 
                         <li className={styles.autocompleteItem}>در حال جستجو...</li>
                     )}
                     {!loadingProducts && products.length === 0 && (
-                        <li className={styles.autocompleteItem}>محصولی یافت نشد</li>
+                        <li className={styles.autocompleteItem}>در حال جستجو...</li>
                     )}
                     {!loadingProducts &&
                         products.map((p) => (
