@@ -322,6 +322,113 @@
     cursor: not-allowed;
 }
 
+
+
+.comparisonBubble {
+    max-width: 100% !important;
+    width: 100%;
+}
+
+.comparisonWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.comparisonHeader {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 0 0.25rem;
+}
+
+.comparisonHeaderA { color: #1d9bf0; }
+.comparisonHeaderB { color: #f4b400; }
+
+.comparisonChart {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.comparisonRow {
+    display: grid;
+    grid-template-columns: 1fr 90px 1fr;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.barSideA {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.barSideB {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.barA, .barB {
+    height: 14px;
+    border-radius: 6px;
+    min-width: 4px;
+    transition: width 0.4s ease;
+}
+
+.barA { background: #1d9bf0; }
+.barB { background: #f4b400; }
+
+.barValueA, .barValueB {
+    font-size: 11px;
+    color: #a7a9ac;
+    flex-shrink: 0;
+}
+
+.comparisonLabel {
+    text-align: center;
+    font-size: 12px;
+    color: #e7e9ea;
+    white-space: nowrap;
+}
+
+/* جدول شبیه اکسل با تم توییتر */
+.compareTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 13px;
+}
+
+.compareTable th,
+.compareTable td {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.55rem 0.75rem;
+    text-align: center;
+}
+
+.compareTable thead th {
+    background: rgba(29, 155, 240, 0.12);
+    color: #1d9bf0;
+    font-weight: 700;
+}
+
+.compareTable tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.compareTable tbody tr:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
 /* -------------------------------- mobile -------------------------------- */
 
 @media (max-width: 640px) {
