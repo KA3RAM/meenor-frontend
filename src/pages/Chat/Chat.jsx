@@ -3,41 +3,26 @@ import styles from "./Chat.module.css";
 // اگر SVGها رو به صورت React Component ایمپورت کنی
 import { ReactComponent as SendIcon } from "../../assets/icons/chat/SendIcon.svg";
 import { ReactComponent as RefreshIcon } from "../../assets/icons/chat/RefreshIcon.svg";
-
-
-/* -------------------------------- data -------------------------------- */
-
-// TODO: replace with your real product source (API call / DB query).
-// Kept as a flat string list to match how the inputs are used below —
-// swap for objects ({ id, name, image, ... }) if you need richer rendering.
-const SAMPLE_PRODUCTS = [
-    "آیفون ۱۵",
-    "آیفون ۱۵ پرو",
-    "آیفون ۱۵ پرو مکس",
-    "سامسونگ گلکسی S24",
-    "سامسونگ گلکسی S24 اولترا",
-    "پلی‌استیشن ۵",
-    "ایکس‌باکس سری X",
-    "تسلا مدل ۳",
-    "تسلا مدل Y",
-    "بی‌وای‌دی سیل",
-    "مک‌بوک ایر M3",
-    "مک‌بوک پرو M3",
-    "شیائومی ۱۴",
-];
-
+import { CHB_send_input_good } from "../../services/Axios";
 
 /* --------------------------- product autocomplete ------------------------ */
 
-function ProductAutocomplete({ value, onChange, placeholder, products }) {
+// حداقل تعداد کاراکتری که باید تایپ بشه تا ریکوئست جستجو زده بشه.
+const MIN_SEARCH_LENGTH = 2;
+// مدت زمان صبر (میلی‌ثانیه) بعد از آخرین تایپ کاربر، قبل از زدن ریکوئست (debounce).
+const SEARCH_DEBOUNCE_MS = 300;
+
+function ProductAutocomplete({ value, onChange, onSelectProduct, placeholder }) {
     const [open, setOpen] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [loadingProducts, setLoadingProducts] = useState(false);
+
     const wrapperRef = useRef(null);
+    const debounceTimerRef = useRef(null);
+    // شماره‌ی هر ریکوئست؛ برای اینکه اگه جواب یه ریکوئستِ قدیمی دیر برسه، نادیده گرفته بشه.
+    const requestIdRef = useRef(0);
 
-    const query = value.trim();
-    const filtered = query.length === 0
-        ? products
-        : products.filter((p) => p.includes(query));
-
+    // بستن dropdown با کلیک بیرون از باکس
     useEffect(() => {
         function handleClickOutside(e) {
             if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -48,28 +33,78 @@ function ProductAutocomplete({ value, onChange, placeholder, products }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    function selectProduct(p) {
-        onChange(p);
+    // هر بار متن اینپوت عوض شد، با تاخیر (debounce) به بک‌اند برای لیست محصولات مرتبط درخواست بزن.
+    useEffect(() => {
+        const query = value.trim();
+
+        // اگه تایمر قبلی هنوز در انتظاره، کنسلش کن (این خودِ منطق debounce هست)
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+        }
+
+        // اگه متن خیلی کوتاهه، اصلاً ریکوئست نزن و لیست رو خالی کن
+        if (query.length < MIN_SEARCH_LENGTH) {
+            setProducts([]);
+            setLoadingProducts(false);
+            return;
+        }
+
+        debounceTimerRef.current = setTimeout(async () => {
+            const currentRequestId = ++requestIdRef.current;
+            setLoadingProducts(true);
+            try {
+                const response = await CHB_send_input_good(query);
+                console.log("RAW RESPONSE:", response?.data);
+                // اگه در همین فاصله کاربر دوباره تایپ کرده و ریکوئست جدیدتری رفته، این جواب رو نادیده بگیر
+                if (currentRequestId !== requestIdRef.current) return;
+                setProducts(response?.data ?? []);
+            } catch (err) {
+                if (currentRequestId !== requestIdRef.current) return;
+                console.error("خطا در جستجوی محصول:", err);
+                setProducts([]);
+            } finally {
+                if (currentRequestId === requestIdRef.current) {
+                    setLoadingProducts(false);
+                }
+            }
+        }, SEARCH_DEBOUNCE_MS);
+
+        // پاکسازی: اگه value دوباره عوض بشه یا کامپوننت unmount بشه، تایمر معلق رو پاک کن
+        return () => clearTimeout(debounceTimerRef.current);
+    }, [value]);
+
+    function selectProduct(product) {
+        onChange(product.name);
+        // آبجکت کامل محصول (شامل id) رو هم به بیرون می‌فرستیم تا در مرحله‌ی
+        // "شروع مقایسه" بشه به‌جای متن، شناسه‌ی واقعی محصول رو به API داد.
+        onSelectProduct?.(product);
         setOpen(false);
     }
 
     return (
         <div className={styles.autocompleteWrapper} ref={wrapperRef}>
-            {open && filtered.length > 0 && (
+            {open && value.trim().length >= MIN_SEARCH_LENGTH && (
                 <ul className={styles.autocompleteList}>
-                    {filtered.map((p) => (
-                        <li key={p}>
-                            <button
-                                type="button"
-                                className={styles.autocompleteItem}
-                                // prevent the input from blurring before the click registers
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={() => selectProduct(p)}
-                            >
-                                {p}
-                            </button>
-                        </li>
-                    ))}
+                    {loadingProducts && (
+                        <li className={styles.autocompleteItem}>در حال جستجو...</li>
+                    )}
+                    {!loadingProducts && products.length === 0 && (
+                        <li className={styles.autocompleteItem}>محصولی یافت نشد</li>
+                    )}
+                    {!loadingProducts &&
+                        products.map((p) => (
+                            <li key={p.id}>
+                                <button
+                                    type="button"
+                                    className={styles.autocompleteItem}
+                                    // prevent the input from blurring before the click registers
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => selectProduct(p)}
+                                >
+                                    {[p.name].filter(Boolean).join(" ")}
+                                </button>
+                            </li>
+                        ))}
                 </ul>
             )}
             <input
@@ -102,6 +137,10 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
 
     const [productA, setProductA] = useState("");
     const [productB, setProductB] = useState("");
+    // آبجکت کامل محصول انتخاب‌شده (شامل id) برای هر دو باکس — برای مرحله‌ی بعدی که باید id رو به API مقایسه بفرستیم.
+    const [selectedProductA, setSelectedProductA] = useState(null);
+    const [selectedProductB, setSelectedProductB] = useState(null);
+
     const [chatInput, setChatInput] = useState("");
     const [messages, setMessages] = useState([]);
     const [sending, setSending] = useState(false);
@@ -140,7 +179,7 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
         morphTo("chat", () => {
             // پیامی به لیست پیام‌ها اضافه نمی‌کنیم — فقط دیتا رو بیرون می‌فرستیم
             // تا خودت بعداً به بک‌اند وصلش کنی.
-            onCompare?.(a, b);
+            onCompare?.(a, b, { productA: selectedProductA, productB: selectedProductB });
         });
     }
 
@@ -175,6 +214,8 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
         morphTo("compare", () => {
             setProductA("");
             setProductB("");
+            setSelectedProductA(null);
+            setSelectedProductB(null);
             setChatInput("");
             setMessages([]);
         });
@@ -210,16 +251,23 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
                         <div className={styles.compareRow}>
                             <ProductAutocomplete
                                 value={productA}
-                                onChange={setProductA}
+                                onChange={(text) => {
+                                    setProductA(text);
+                                    // اگه کاربر بعد از انتخاب دوباره دستی تایپ کنه، انتخاب قبلی دیگه معتبر نیست
+                                    setSelectedProductA(null);
+                                }}
+                                onSelectProduct={setSelectedProductA}
                                 placeholder="محصول اول..."
-                                products={SAMPLE_PRODUCTS}
                             />
                             <span className={styles.vsBadge}>VS</span>
                             <ProductAutocomplete
                                 value={productB}
-                                onChange={setProductB}
+                                onChange={(text) => {
+                                    setProductB(text);
+                                    setSelectedProductB(null);
+                                }}
+                                onSelectProduct={setSelectedProductB}
                                 placeholder="محصول دوم..."
-                                products={SAMPLE_PRODUCTS}
                             />
                         </div>
 

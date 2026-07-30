@@ -3,7 +3,7 @@
     import image2 from "../../assets/images/Lock.jpg"
     import {
     add_to_wishlist_chatBot, edit_user_profile, edit_user_profile_password,
-    get_all_wishlist_laptops,
+    get_all_wishlist_phone,
     get_user_profile,
     login_send_data_token
 } from "../../services/Axios";
@@ -74,7 +74,7 @@
 
             const fetch_get_wishlist_laptops = async () => {
                 try {
-                    let { data: wishlists } = await get_all_wishlist_laptops();
+                    let { data: wishlists } = await get_all_wishlist_phone();
                     setWishlist(wishlists);
                     console.log(wishlists);
 

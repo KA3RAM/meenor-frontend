@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const CHB_send_input_good = (input) => {
     const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/chatbot/search_laptop/?search=${input}`;
+    const url = `http://127.0.0.1:8000/chatbot/search_phone/?search=${input}`;
     if(input.length > 0){
         return axios.get(url,{
             headers: {
@@ -41,9 +41,9 @@ export const creat_static_good_gpu = (input) => {
         }
     });
 }
-export const creat_static_good_laptop_details = (input) => {
+export const creat_static_good_phone_details = (input) => {
     const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/chatbot/register_laptop/`;
+    const url = `http://127.0.0.1:8000/chatbot/register_phone/`;
     return axios.post(url,input,{
         headers: {
             "authorization": `Token ${token}`,
@@ -51,9 +51,9 @@ export const creat_static_good_laptop_details = (input) => {
     });
 }
 
-export const get_laptop_details = (input) => {
+export const get_phone_details = (input) => {
     const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/chatbot/get_laptop/${input}/`;
+    const url = `http://127.0.0.1:8000/chatbot/get_phone/${input}/`;
     return axios.get(url,{
         headers: {
             "authorization": `Token ${token}`,
@@ -63,7 +63,7 @@ export const get_laptop_details = (input) => {
 
 export const add_to_wishlist_chatBot = (input) => {
     const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/chatbot/wishlist_laptop/${input}/`
+    const url = `http://127.0.0.1:8000/chatbot/wishlist_phone/${input}/`
     return axios.get(url,{
         headers: {
             "authorization": `Token ${token}`,
@@ -72,22 +72,9 @@ export const add_to_wishlist_chatBot = (input) => {
 
 
 }
-export const get_all_wishlist_laptops = () => {
+export const get_all_wishlist_phone = () => {
     const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/chatbot/wishlisted_laptops/`
-    return axios.get(url,{
-        headers: {
-            "authorization": `Token ${token}`,
-        }
-    });
-
-
-}
-
-
-export const like_laptop_chatbot = (input) => {
-    const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/chatbot/like_laptop/${input}/`
+    const url = `http://127.0.0.1:8000/chatbot/wishlisted_phone/`
     return axios.get(url,{
         headers: {
             "authorization": `Token ${token}`,
@@ -97,9 +84,22 @@ export const like_laptop_chatbot = (input) => {
 
 }
 
-export const unlike_laptop_chatbot = (input) => {
+
+export const like_phone_chatbot = (input) => {
     const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/chatbot/like_laptop/${input}/`
+    const url = `http://127.0.0.1:8000/chatbot/like_phone/${input}/`
+    return axios.get(url,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    });
+
+
+}
+
+export const unlike_phone_chatbot = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/chatbot/like_phone/${input}/`
     return axios.delete(url,{
         headers: {
             "authorization": `Token ${token}`,
