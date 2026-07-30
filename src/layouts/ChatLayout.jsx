@@ -13,7 +13,7 @@ import Ai from "../assets/icons/Sidebar/ai.svg";
 import Contact from "../assets/icons/Sidebar/contact.svg";
 import AboutUs from "../assets/icons/Sidebar/about-us.svg";
 import Naghdnegar from "../assets/icons/Sidebar/nn.svg"; 
-import Likes from "../assets/icons/Sidebar/likes.svg"
+import Likes from "../assets/icons/Sidebar/Likes.svg"
 
 export default function ChatLayout() {
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);

@@ -15,7 +15,7 @@ import Views from "../../assets/icons/PostImages/Views.svg"
 import ThreeDots from "../../assets/icons/PostImages/Threedots.svg"
 import Saves from "../../assets/icons/PostImages/Saves.svg"
 import Share from "../../assets/icons/PostImages/Share.svg"
-import Likes from "../../assets/icons/Sidebar/likes.svg"
+import Likes from "../../assets/icons/Sidebar/Likes.svg"
 
 export default function Naghdnegar() {
     return(

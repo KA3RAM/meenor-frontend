@@ -153,7 +153,36 @@ function buildComparisonSections(productA, productB) {
     return { numericRows, textRows };
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 function ComparisonBlock({ productA, productB }) {
+    // هوک‌ها همیشه باید اول و بدون شرط صدا زده بشن (قانون Rules of Hooks)
+    const [animated, setAnimated] = useState(false);
+
+    useEffect(() => {
+        if (!productA || !productB) return;
+
+        // دو تا rAF پشت سر هم لازمه: اولی مطمئن می‌شه مرورگر state اولیه (width: 0)
+        // رو یه بار paint کرده، بعدش تازه state رو عوض می‌کنیم که transition بیفته.
+        const raf1 = requestAnimationFrame(() => {
+            const raf2 = requestAnimationFrame(() => setAnimated(true));
+            return () => cancelAnimationFrame(raf2);
+        });
+        return () => cancelAnimationFrame(raf1);
+    }, [productA, productB]);
+
+    // early return باید بعد از همه‌ی هوک‌ها باشه
     if (!productA || !productB) return null;
 
     const nameA = productA.name;
@@ -190,7 +219,7 @@ function ComparisonBlock({ productA, productB }) {
                 <>
                     <h4 className={styles.compareSectionTitle}>مقایسه‌ی مشخصات فنی</h4>
                     <div className={styles.comparisonChart}>
-                        {numericRows.map((row) => {
+                        {numericRows.map((row, index) => {
                             // مقیاسِ هر ردیف مستقل از بقیه‌ست، چون واحدها خیلی متفاوتن
                             // (مثلاً AnTuTu میلیونیه ولی نرخ رفرش صددوتاییه) — اگه یه
                             // مقیاس مشترک برای همه‌ی ردیف‌ها استفاده کنیم، بارهای
@@ -222,6 +251,12 @@ function ComparisonBlock({ productA, productB }) {
                                         ? styles.valueLoser
                                         : "";
 
+                            // مقدار نهایی هر بار؛ تا وقتی animated نشده، صفره تا انیمیشن fill از صفر شروع بشه
+                            const targetWidthA = (row.valueA / rowMax) * 100;
+                            const targetWidthB = (row.valueB / rowMax) * 100;
+                            // هر ردیف با یه تاخیر کوچیک نسبت به ردیف قبلی شروع به پر شدن می‌کنه (افکت استگر)
+                            const delay = `${index * 60}ms`;
+
                             return (
                                 <div key={row.key} className={styles.comparisonRow}>
                                     <div className={styles.barSideA}>
@@ -230,14 +265,20 @@ function ComparisonBlock({ productA, productB }) {
                                         </span>
                                         <div
                                             className={`${styles.bar} ${barClassA}`}
-                                            style={{ width: `${(row.valueA / rowMax) * 100}%` }}
+                                            style={{
+                                                width: animated ? `${targetWidthA}%` : "0%",
+                                                transitionDelay: delay,
+                                            }}
                                         />
                                     </div>
                                     <div className={styles.comparisonLabel}>{row.label}</div>
                                     <div className={styles.barSideB}>
                                         <div
                                             className={`${styles.bar} ${barClassB}`}
-                                            style={{ width: `${(row.valueB / rowMax) * 100}%` }}
+                                            style={{
+                                                width: animated ? `${targetWidthB}%` : "0%",
+                                                transitionDelay: delay,
+                                            }}
                                         />
                                         <span className={`${styles.barValueB} ${valueClassB}`}>
                                             {row.valueB.toLocaleString()}
@@ -277,6 +318,24 @@ function ComparisonBlock({ productA, productB }) {
         </div>
     );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function ProductAutocomplete({ value, onChange, onSelectProduct, placeholder }) {
