@@ -278,3 +278,25 @@
         display: none;
     }
 }
+/* ========================= EXTRA SMALL SCREENS ========================= */
+@media (max-width: 380px) {
+    .sidebar {
+        width: 64px;
+        padding: 0.75rem 0.35rem;
+    }
+
+    .icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .SendPostButton {
+        width: 42px;
+        height: 42px;
+    }
+
+    .ProfileCard {
+        width: 34px;
+        height: 34px;
+    }
+}

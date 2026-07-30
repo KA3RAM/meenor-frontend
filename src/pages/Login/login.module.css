@@ -3,6 +3,8 @@
     color:  white;
     /* background-color: aqua; */
     width: 500px;
+    max-width: 100%;
+    box-sizing: border-box;
     height: fit-content;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.117), rgba(255,255,255,.02));
     border: 1px solid rgba(255, 255, 255, 0.14);
@@ -10,6 +12,13 @@
     padding: 28px 24px 24px;
     box-shadow: 0 20px 60px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.04) inset;
     backdrop-filter: blur(10px);
+}
+
+@media (max-width: 560px) {
+    .login_wrapper {
+        border-radius: 14px;
+        padding: 22px 16px 18px;
+    }
 }
 .title_log{
     font-family: "Doran";
@@ -45,7 +54,15 @@ input[type="username"]{
     color:#f7f8fb;
     outline: none;
     margin-top: 0.5rem;
+    box-sizing: border-box;
     transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+
+@media (max-width: 480px) {
+    input[type="password"],
+    input[type="username"] {
+        padding: 0 16px;
+    }
 }
 
 input::placeholder { color: #b6bdc9; }
@@ -73,4 +90,3 @@ input:focus {
 .meta { margin-top: 14px; font-size: 14px; text-align: center; }
 .meta a { color: rgba(0,229,255,.95); text-decoration: none; }
 .meta a:hover { text-decoration: underline; }
-

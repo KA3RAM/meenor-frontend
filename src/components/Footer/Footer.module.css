@@ -1,6 +1,45 @@
+/* Footer.module.css */
+
 .footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: rgb(240, 240, 240);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgb(240, 240, 240);
+  padding: 1rem 2rem;           /* ← اضافه شد */
+  flex-wrap: wrap;              /* ← اضافه شد برای ریسپانسیو */
+  gap: 0.5rem;                 /* ← اضافه شد */
+  font-size: 0.9rem;           /* ← اضافه شد */
+}
+
+/* ============================================================ */
+/*                    Media Queries - Responsive                 */
+/* ============================================================ */
+
+/* تبلت */
+@media screen and (max-width: 1024px) {
+  .footer {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* موبایل */
+@media screen and (max-width: 768px) {
+  .footer {
+    padding: 0.6rem 1rem;
+    font-size: 0.75rem;
+    justify-content: center;    /* ← وسط‌چین شدن */
+    flex-direction: column;     /* ← ستونی شدن */
+    gap: 0.3rem;
+    text-align: center;
+  }
+}
+
+/* موبایل خیلی کوچک */
+@media screen and (max-width: 480px) {
+  .footer {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.65rem;
+    gap: 0.2rem;
+  }
 }

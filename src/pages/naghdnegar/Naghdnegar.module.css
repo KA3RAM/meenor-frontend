@@ -82,7 +82,7 @@
     display: block;
     margin: auto;
     max-height: 500px;
-    width: max-content;
+    max-width: max-content;
     object-fit: contain;
 }
 
@@ -163,4 +163,41 @@ hr {
     cursor: pointer;
     margin-right: auto;
     margin-left: 0;
+}
+/* ============================== RESPONSIVE ============================== */
+
+@media (max-width: 768px) {
+    .wrapper {
+        max-width: 100%;
+        padding: 0 0.75rem;
+    }
+
+    .UserPost {
+        padding: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .LeftSide {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .pictureProfile {
+        width: 34px;
+        height: 34px;
+    }
+
+    .Name {
+        font-size: 0.9rem;
+    }
+
+    .Handle,
+    .Date {
+        font-size: 0.8rem;
+    }
+
+    .PostContentWrapper p {
+        font-size: 0.92rem;
+    }
 }

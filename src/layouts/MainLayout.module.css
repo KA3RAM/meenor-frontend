@@ -6,8 +6,21 @@
   max-width: 1300px; 
   margin: 0 auto;   /* وسط چین */
   padding: 1.5rem;  /* فاصله از چپ و راست */
+  box-sizing: border-box;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+    font-size: medium;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+}
 
 
 

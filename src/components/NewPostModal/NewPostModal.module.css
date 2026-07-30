@@ -353,3 +353,35 @@
         max-height: 92vh;
     }
 }
+/* ========================= EXTRA SMALL SCREENS ========================= */
+@media (max-width: 420px) {
+    .body {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .avatar {
+        width: 36px;
+        height: 36px;
+    }
+
+    .textarea {
+        font-size: 16px;
+    }
+
+    .dropdown {
+        width: 100%;
+        right: 0;
+        left: 0;
+    }
+
+    .footer {
+        padding: 10px 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .submitRow {
+        margin-inline-start: auto;
+    }
+}

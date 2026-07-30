@@ -2,17 +2,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    width: 100%;
 }
 
 .links {
     display: flex;
+    align-items: center;
     gap: 2rem;
+    width: 100%;
 }
 
 .link {
     color: #999;
     text-decoration: none;
     transition: color .3s;
+    white-space: nowrap;
 }
 
 .link:hover {
@@ -23,5 +28,103 @@
     color: #fff;
     text-decoration: none;
     font-weight: 600;
+    white-space: nowrap;
 }
 
+.profile {
+    margin-inline-start: auto;
+}
+
+/* ------------------------------ hamburger ------------------------------ */
+.menuToggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 30;
+}
+
+.burgerBar {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.burgerBarOpen1 {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.burgerBarOpen2 {
+    opacity: 0;
+}
+
+.burgerBarOpen3 {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* -------------------------------- mobile -------------------------------- */
+@media (max-width: 768px) {
+    .navbar {
+        justify-content: flex-end;
+    }
+
+    .menuToggle {
+        display: flex;
+    }
+
+    .links {
+        position: absolute;
+        top: calc(100% + 12px);
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.25rem;
+        background: rgba(10, 10, 10, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        padding: 0.75rem;
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease;
+        z-index: 20;
+    }
+
+    .linksOpen {
+        max-height: 320px;
+        opacity: 1;
+        pointer-events: auto;
+        padding: 0.75rem;
+    }
+
+    .link,
+    .active {
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        white-space: normal;
+    }
+
+    .link:hover,
+    .active {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .profile {
+        margin-inline-start: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 0.25rem;
+        padding-top: 1rem;
+    }
+}

@@ -8,12 +8,12 @@ import NewPostModal from "../components/NewPostModal/NewPostModal";
 /* ---------------------------------- icons --------------------------------- */
 import Home from "../assets/icons/Sidebar/home.svg";
 import Search from "../assets/icons/Sidebar/search.svg";
-import Likes from "../assets/icons/Sidebar/likes.svg";
 import Saves from "../assets/icons/Sidebar/saves.svg";
 import Ai from "../assets/icons/Sidebar/ai.svg";
 import Contact from "../assets/icons/Sidebar/contact.svg";
 import AboutUs from "../assets/icons/Sidebar/about-us.svg";
 import Naghdnegar from "../assets/icons/Sidebar/nn.svg"; 
+import Likes from "../assets/icons/Sidebar/likes.svg"
 
 export default function ChatLayout() {
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -60,9 +60,9 @@ export default function ChatLayout() {
                 </div>
 
                 <button className={styles.SendPostButton}
-                    onClick={() => setIsPostModalOpen(true)}
-
-    >+ پست جدید</button>
+                    onClick={() => setIsPostModalOpen(true)}>
+                    + پست جدید
+                </button>
 
                 <div className={styles.ButtomWrapper}>
                     <div className={styles.ButtomProfileCard}>

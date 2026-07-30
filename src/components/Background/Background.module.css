@@ -84,3 +84,13 @@
     pointer-events:none;
 
 }
+
+
+/* ==================== SMALLER ORBS ON MOBILE (PERF) ==================== */
+@media (max-width: 768px) {
+    .orb {
+        width: 320px;
+        height: 320px;
+        filter: blur(90px);
+    }
+}
