@@ -20,6 +20,13 @@ export default function Profile() {
         navigate("/register");
 
     }
+    if (!localStorage.getItem("token")) {
+        navigate("/register");
+    }
+
+
+
+
     const [listOfWishlist, setWishlist] = useState([])
     const [usersInfo, setUsersInfo] = useState({})
     const [isEditing, setIsEditing] = useState(false)

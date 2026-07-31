@@ -16,8 +16,19 @@ import ThreeDots from "../../assets/icons/PostImages/Threedots.svg"
 import Saves from "../../assets/icons/PostImages/Saves.svg"
 import Share from "../../assets/icons/PostImages/Share.svg"
 import Likes from "../../assets/icons/Sidebar/likes.svg"
+import {useNavigate} from "react-router-dom";
 
 export default function Naghdnegar() {
+
+    const navigate = useNavigate();
+    const goToRegister = () => {
+        navigate("/register");
+
+    }
+    if (!localStorage.getItem("token")) {
+        navigate("/register");
+    }
+
     return(
         <div className={styles.wrapper}>
 

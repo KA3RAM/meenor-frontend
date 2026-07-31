@@ -4,6 +4,7 @@ import styles from "./Chat.module.css";
 import { ReactComponent as SendIcon } from "../../assets/icons/chat/SendIcon.svg";
 import { ReactComponent as RefreshIcon } from "../../assets/icons/chat/RefreshIcon.svg";
 import { CHB_send_input_good } from "../../services/Axios";
+import {useNavigate} from "react-router-dom";
 
 /* --------------------------- product autocomplete ------------------------ */
 
@@ -15,6 +16,9 @@ const SEARCH_DEBOUNCE_MS = 300;
 
 
 /* ------------------------- comparison table + spec sheet ------------------------- */
+
+
+
 
 // لیبل فارسی برای فیلدهایی که از قبل می‌شناسیم (چه عددی چه متنی).
 // هر فیلد جدیدی که بک‌اند به مدل محصول اضافه کرد، اگه اینجا نباشه هم مشکلی نیست —
@@ -397,6 +401,15 @@ function fakeAssistantReply(text) {
 
 /* ------------------------------- component ------------------------------ */
 export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
+    const navigate = useNavigate();
+    const goToRegister = () => {
+        navigate("/register");
+
+    }
+    if (!localStorage.getItem("token")) {
+        goToRegister()
+    }
+
     // "compare"  -> two product inputs + autocomplete
     // "chat"     -> single textarea + message list
     const [phase, setPhase] = useState("compare");

@@ -44,6 +44,9 @@ export default function Home() {
         navigate("/chat");
 
     }
+    const goToNaghd = () => {
+        navigate("/naghdnegar");
+    }
 
     return (
         <div>
@@ -309,7 +312,7 @@ export default function Home() {
                    <p> دست به جنبون! وقتشه به بقیه کمک کنی تا محصول بهتری رو برای خرید انتخاب کنن.
                     با ورود به بخش نقد نگار شما میتوانید تجربیات خودتان را با بقیه افراد به اشتراک بگذارید.</p>
 
-                    <button>نقد نگار</button>
+                    <button onClick={goToNaghd}>نقد نگار</button>
                 </div>
             </div>
 
