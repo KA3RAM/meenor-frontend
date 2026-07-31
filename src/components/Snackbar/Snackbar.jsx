@@ -6,8 +6,7 @@ const ICONS = {
     info: "ℹ",
 };
 
-// کامپوننت نمایشی خالص — همیشه توی JSX رندرش کن (mount)، خودش بر اساس
-// اینکه message داره یا نه، تصمیم می‌گیره چیزی نشون بده یا نه.
+
 export default function Snackbar({ message, type = "error", onClose }) {
     if (!message) return null;
 

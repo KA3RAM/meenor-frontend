@@ -43,10 +43,12 @@
 
 .input-wrap { display: flex; align-items: center; justify-content: center;}
 
-input[type="text"],
-input[type="email"],
-input[type="password"] ,
-input[type="username"]{
+
+
+.register_wrapper input[type="text"],
+.register_wrapper input[type="email"],
+.register_wrapper input[type="password"] ,
+.register_wrapper input[type="username"]{
     width: 100%; height: 48px;
     padding: 0 44px 0 44px;
     border-radius: 14px;
@@ -68,9 +70,9 @@ input[type="username"]{
     }
 }
 
-input::placeholder { color: #b6bdc9; }
+.register_wrapper input::placeholder { color: #b6bdc9; }
 
-input:focus {
+.register_wrapper input:focus {
     box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.303), 0 0 28px rgba(0, 229, 255, 0.513);
     background: rgba(255,255,255,.08);
     outline: none;

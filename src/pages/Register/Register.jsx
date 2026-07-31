@@ -64,20 +64,20 @@ export default function Register() {
     //             "AnTuTu": 27986,
     //             "GeekBench": 1156
     //         }
-    //
-    //
+    
+    
     //         await creat_static_good_phone_details(data);
-    //
+    
     //         console.log("Created");
-    //
+    
     //     } catch (err) {
     //         console.error("STATUS:", err.response?.status);
     //         console.error("ERROR DATA:", err.response?.data);
     //         console.error("ERROR:", err);        }
-    //
-    //
+    
+    
     // };
-    //
+    
     // creat_good()
 
 
