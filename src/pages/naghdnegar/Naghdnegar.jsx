@@ -17,7 +17,6 @@ import Saves from "../../assets/icons/PostImages/Saves.svg"
 import Share from "../../assets/icons/PostImages/Share.svg"
 import Likes from "../../assets/icons/Sidebar/likes.svg"
 import {useNavigate} from "react-router-dom";
-import Likes from "../../assets/icons/Sidebar/Likes.svg"
 
 export default function Naghdnegar() {
 
