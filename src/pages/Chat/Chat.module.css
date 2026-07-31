@@ -412,7 +412,7 @@
     height: 14px;
     border-radius: 6px;
     min-width: 4px;
-    transition: width 0.4s ease, background-color 0.2s ease;
+    transition: width 0.65s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
 }
 
 /* رنگ خنثی، وقتی دو محصول توی این ویژگی مساوی‌ان (نه برنده نه بازنده) */
@@ -442,9 +442,13 @@
 
 .comparisonLabel {
     text-align: center;
-    font-size: 12px;
+    font-size: 11.5px;
     color: #e7e9ea;
-    white-space: nowrap;
+    white-space: normal;       /* به‌جای nowrap */
+    word-break: break-word;     /* اگه کلمه خیلی بلند بود هم بشکنه */
+    line-height: 1.35;
+    overflow-wrap: break-word;
+    padding: 0 2px;
 }
 
 /* ------------------------- جدول سایر مشخصات (متنی) ------------------------- */

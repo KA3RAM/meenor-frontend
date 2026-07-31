@@ -9,11 +9,11 @@
 
 .UserPost {
     border: 1px solid rgba(255, 255, 255, 0.162);
-    height: 95vh;
+    height: auto;
     border-radius: 14px;
     padding: 1rem;
     margin: 0.85rem;
-    cursor: pointer;
+    cursor: default;
     
 }
 
