@@ -1,15 +1,22 @@
 
 import styles from "./Register.module.css"
 import {Link, useNavigate} from "react-router-dom";
-import {useRef} from "react";
+import {useRef, useState} from "react";
 import {
     creat_static_good_cpu,
     creat_static_good_gpu, creat_static_good_phone_details,
     login_send_data_token,
     register_send_data_axios
 } from "../../services/Axios";
+import Snackbar from "../../components/Snackbar/Snackbar";
+import {useSnackbar} from "../../components/Snackbar/useSnackbar";
+import {getErrorMessage} from "../../utils/getErrorMessage";
 
 export default function Register() {
+    const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
+    // برای جلوگیری از سابمیت تکراری (کلیک چندباره روی دکمه تا جواب سرور بیاد)
+    const [submitting, setSubmitting] = useState(false);
+
 
     // -----------------------------------------------------
 
@@ -92,6 +99,8 @@ export default function Register() {
 
 
     const fetch_send_input_data = async () => {
+        if (submitting) return;
+        setSubmitting(true);
         try {
             let data_register ={
                 first_name: firstname_ref.current.value,
@@ -111,7 +120,9 @@ export default function Register() {
             await fetch_get_token(data_login);
 
         } catch (err) {
-            console.error("An error occurred:", err);
+            showSnackbar(getErrorMessage(err), "error");
+        } finally {
+            setSubmitting(false);
         }
 
 
@@ -122,11 +133,16 @@ export default function Register() {
         try {
             let { data: token } = await login_send_data_token(input_pass_and_user);
             localStorage.setItem("token", token.token);
-            goToHome()
+
+            showSnackbar("ثبت‌نام با موفقیت انجام شد", "success");
+            // یه تاخیر کوچیک قبل از ریدایرکت، وگرنه کاربر فرصت دیدن اسنک‌بار رو پیدا نمی‌کنه.
+            setTimeout(() => {
+                goToHome();
+            }, 900);
 
 
         } catch (err) {
-            console.error("An error occurred:", err);
+            throw err; // بذار fetch_send_input_data (که این تابع رو صدا زده) پیام خطا رو نشون بده
         }
 
 
@@ -134,8 +150,9 @@ export default function Register() {
 
     return (
         <div className={styles.register_wrapper}>
+            <Snackbar message={snackbar?.message} type={snackbar?.type} onClose={closeSnackbar} />
             <h1 className={styles.title_reg}>ثبت‌ نام</h1>
-            <p className={styles.subtitle_reg}>حساب کاربری جدید بسازید و وارد دنیای مینور شوید ✨</p>
+            <p className={styles.subtitle_reg}>حساب کاربری جدید بسازید و وارد دنیای مینور شوید</p>
             <form id={styles.register}>
                 {/* name */}
                 <label className={styles.reg_field}>
@@ -179,10 +196,10 @@ export default function Register() {
                     </div>
                 </label>
 
-                <button type="submit" className={styles.btn} onClick={(e) => {
+                <button type="submit" className={styles.btn} disabled={submitting} onClick={(e) => {
                     e.preventDefault();
                     fetch_send_input_data();
-                }}>ایجاد حساب</button>
+                }}>{submitting ? "در حال ثبت‌نام..." : "ایجاد حساب"}</button>
                 <p className={styles.meta}>
                 قبلاً حساب دارید؟{" "}
                 <Link to="/login">ورود</Link>

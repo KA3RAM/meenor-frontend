@@ -1,0 +1,82 @@
+.snackbar {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 380px;
+    width: calc(100% - 3rem);
+    background: #16181c;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: 4px solid #71767b;
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    color: #e7e9ea;
+    font-size: 14px;
+    z-index: 9999;
+    direction: rtl;
+    animation: slideInRight 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.error { border-right-color: #ef4444; }
+.success { border-right-color: #2dd4bf; }
+.info { border-right-color: #1d9bf0; }
+
+.icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.error .icon { background: #ef4444; color: #ffffff; }
+.success .icon { background: #2dd4bf; color: #062b26; }
+.info .icon { background: #1d9bf0; color: #04202f; }
+
+.message {
+    flex: 1;
+    line-height: 1.6;
+}
+
+.closeBtn {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: #71767b;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0.2rem;
+}
+
+.closeBtn:hover {
+    color: #ffffff;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .snackbar {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+        max-width: none;
+    }
+}
