@@ -214,11 +214,19 @@
         padding: 0.85rem;
     }
 }
-
 @media (max-width: 480px) {
     .LeftSide {
         gap: 12px;
         flex-wrap: wrap;
+    }
+
+    .LeftSide p{
+        gap: 12px;
+        flex-wrap: wrap;
+        display: none;
+    }
+    .LeftSide > button:last-child p {
+        display: inline-block;
     }
 
     .pictureProfile {
@@ -237,5 +245,6 @@
 
     .PostContentWrapper p {
         font-size: 0.92rem;
+        
     }
 }
