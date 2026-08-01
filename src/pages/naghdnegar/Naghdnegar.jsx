@@ -13,10 +13,13 @@ import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.s
 import { ReactComponent as DislikeIcon } from "../../assets/icons/PostImages/dislike.svg"
 
 import { useNavigate } from "react-router-dom";
+import {feed_post} from "../../services/Axios";
 
 export default function Naghdnegar() {
 
     const navigate = useNavigate();
+
+    const [feedPosts, setFeedPosts] = useState([]);
 
     const [activeStates, setActiveStates] = useState({
         like: false,
@@ -55,79 +58,93 @@ export default function Naghdnegar() {
         navigate("/register");
     }
 
+    const fetch_get_feed = async () => {
+        try{
+            let {data: data} = await feed_post();
+            setFeedPosts(data);
+        }
+        catch(err){
+            console.log(err);
+        }
+    }
+
     return (
         <div className={styles.wrapper}>
 
-            <div className={styles.UserPost}>
+            {feedPosts.map((post, index) => {
+                <div className={styles.UserPost}>
 
-                <div className={styles.PostHeader}>
-                    <div className={styles.HeaderInfo}>
-                        <img className={styles.pictureProfile} src={Art} alt="" />
-                        <p className={styles.Name}>Arthur MacWaters</p>
-                        <p className={styles.Handle}>@ArthurMacwaters</p>
-                        <span className={styles.Dot}>·</span>
-                        <p className={styles.Date}>Jul 28</p>
-                    </div>
+                    <div className={styles.PostHeader}>
+                        <div className={styles.HeaderInfo}>
+                            <img className={styles.pictureProfile} src={Art} alt="" />
+                            <p className={styles.Name}>Arthur MacWaters</p>
+                            <p className={styles.Handle}>@ArthurMacwaters</p>
+                            <span className={styles.Dot}>·</span>
+                            <p className={styles.Date}>Jul 28</p>
+                        </div>
 
-                    <button className={styles.ThreeDots}>
-                        <ThreeDotsIcon />
-                    </button>
-                </div>
-
-                <div className={styles.PostContentWrapper}>
-                    <p>I met with the team of the Lockheed Martin defense company – one of the strongest enterprises in the United States, with which we have been cooperating for a long time. Lockheed Martin is the company that produces ATACMS, HIMARS, F-16s, and missiles for Patriot systems.</p>
-                </div>
-
-                <div className={styles.PostImgWrapper}>
-                    <img className={styles.PostImg} src={sample1} alt="" />
-                </div>
-
-                <div className={styles.PostStats}>
-                    <div className={styles.LeftSide}>
-
-                        <button
-                            className={`${styles.SavesWrapper} ${activeStates.save ? styles.Active : ""}`}
-                            onClick={toggleSave}
-                        >
-                            <SavesIcon />
-                            <p>571</p>
-                        </button>
-
-                        <button
-                            className={`${styles.LikesWrapper} ${activeStates.like ? styles.Active : ""}`}
-                            onClick={toggleLike}
-                        >
-                            <LikeIcon />
-                            <p>4.7K</p>
-                        </button>
-
-                        <button
-                            className={`${styles.DislikeWrapper} ${activeStates.dislike ? styles.Active : ""}`}
-                            onClick={toggleDislike}
-                        >
-                            <DislikeIcon />
-                            <p>4.7K</p>
-                        </button>
-
-                        <button className={styles.ComentsWrapper}>
-                            <CommentsIcon />
-                            <p>307</p>
-                        </button>
-
-                        <button className={styles.ViewsWrapper}>
-                            <ViewsIcon />
-                            <p>417K</p>
+                        <button className={styles.ThreeDots}>
+                            <ThreeDotsIcon />
                         </button>
                     </div>
 
-                    <div className={styles.RightSide}>
-                        <button className={styles.SharesWrapper}>
-                            <ShareIcon />
-                        </button>
+                    <div className={styles.PostContentWrapper}>
+                        <p>I met with the team of the Lockheed Martin defense company – one of the strongest enterprises in the United States, with which we have been cooperating for a long time. Lockheed Martin is the company that produces ATACMS, HIMARS, F-16s, and missiles for Patriot systems.</p>
                     </div>
-                </div>
 
-            </div>
+                    <div className={styles.PostImgWrapper}>
+                        <img className={styles.PostImg} src={sample1} alt="" />
+                    </div>
+
+                    <div className={styles.PostStats}>
+                        <div className={styles.LeftSide}>
+
+                            <button
+                                className={`${styles.SavesWrapper} ${activeStates.save ? styles.Active : ""}`}
+                                onClick={toggleSave}
+                            >
+                                <SavesIcon />
+                                <p>571</p>
+                            </button>
+
+                            <button
+                                className={`${styles.LikesWrapper} ${activeStates.like ? styles.Active : ""}`}
+                                onClick={toggleLike}
+                            >
+                                <LikeIcon />
+                                <p>4.7K</p>
+                            </button>
+
+                            <button
+                                className={`${styles.DislikeWrapper} ${activeStates.dislike ? styles.Active : ""}`}
+                                onClick={toggleDislike}
+                            >
+                                <DislikeIcon />
+                                <p>4.7K</p>
+                            </button>
+
+                            <button className={styles.ComentsWrapper}>
+                                <CommentsIcon />
+                                <p>307</p>
+                            </button>
+
+                            <button className={styles.ViewsWrapper}>
+                                <ViewsIcon />
+                                <p>417K</p>
+                            </button>
+                        </div>
+
+                        <div className={styles.RightSide}>
+                            <button className={styles.SharesWrapper}>
+                                <ShareIcon />
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            })
+
+            }
 
         </div>
     )

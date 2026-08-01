@@ -154,3 +154,43 @@ export const edit_user_profile_password = (input_edit_data) => {
         }
     });
 }
+
+
+// نقدنگار
+
+export const creat_post = (phone, image, title, content) => {
+    const token = localStorage.getItem("token");
+    const url = ` http://127.0.0.1:8000/naghdnegar/create_post/ `;
+    const formData = new FormData();
+    formData.append("phone", phone);
+    formData.append("image", image);
+    formData.append("title", "nothing to say");
+    formData.append("content", content);
+    return  axios.post(url, formData, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    });
+
+}
+export const feed_post = () => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/feed/`;
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
+
+
+
+
+
+
+
+
+
+
+

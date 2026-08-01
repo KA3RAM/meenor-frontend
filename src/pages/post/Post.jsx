@@ -21,6 +21,8 @@ export default function Post() {
     const [comentText, setComentText] = useState("")
     const textareaRef = useRef(null)
 
+
+
     const MAX_TEXTAREA_HEIGHT = 200 // بعد از این ارتفاع (به px)، خود باکس اسکرول می‌خوره
     const MAX_COMENT_LENGTH = 500 // حداکثر تعداد کاراکتر مجاز برای کامنت
 
@@ -49,6 +51,8 @@ export default function Post() {
         // اسکرول خودکار صفحه به سمت باکس کامنت وقتی داره بزرگ می‌شه
         el.scrollIntoView({ behavior: "smooth", block: "center" })
     }
+
+
 
     return(
         <div className={styles.wrapper}>

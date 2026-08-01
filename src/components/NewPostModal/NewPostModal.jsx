@@ -2,35 +2,36 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./NewPostModal.module.css";
 import lock from "../../assets/images/Lock.jpg"
+import {CHB_send_input_good, creat_post} from "../../services/Axios";
 
-const POST_TOPICS = [
-    "آیفون ۱۵",
-    "آیفون ۱۵ پرو",
-    "آیفون ۱۵ پرو مکس",
-    "سامسونگ گلکسی S24",
-    "سامسونگ گلکسی S24 اولترا",
-    "پلی‌استیشن ۵",
-    "ایکس‌باکس سری X",
-    "تسلا مدل ۳",
-    "تسلا مدل Y",
-    "بی‌وای‌دی سیل",
-    "مک‌بوک ایر M3",
-    "مک‌بوک پرو M3",
-    "شیائومی ۱۴",
-];
+// حداقل تعداد کاراکتری که باید تایپ بشه تا ریکوئست جستجوی محصول زده بشه
+const MIN_SEARCH_LENGTH = 2;
+// مدت زمان صبر بعد از آخرین تایپ کاربر، قبل از زدن ریکوئست (debounce)
+const SEARCH_DEBOUNCE_MS = 300;
 
 const MAX_CHARS = 10000;
 
 export default function NewPostModal({ isOpen, onClose, onSubmit }) {
     const [text, setText] = useState("");
     const [image, setImage] = useState(null); // { file, previewUrl }
-    const [topic, setTopic] = useState("");
+    // به‌جای رشته‌ی ساده، حالا کل آبجکت محصول انتخاب‌شده (شامل id واقعیش توی دیتابیس) رو نگه می‌داریم —
+    // چون موقع ارسال پست به بک‌اند، باید همون id رو بفرستیم نه فقط اسم نمایشیش.
+    const [topic, setTopic] = useState(null);
     const [topicQuery, setTopicQuery] = useState("");
     const [topicOpen, setTopicOpen] = useState(false);
+    // نتیجه‌ی جست‌وجوی محصول از بک‌اند (آرایه‌ای از آبجکت‌ها با id/name/...)
+    const [responsePhone, setResponsePhone] = useState([]);
+    const [loadingTopics, setLoadingTopics] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     const fileInputRef = useRef(null);
     const topicWrapperRef = useRef(null);
     const textareaRef = useRef(null);
+    const titleRef = useRef(null);
+
+    const debounceTimerRef = useRef(null);
+    // شماره‌ی هر ریکوئست؛ تا اگه جواب یه ریکوئستِ قدیمی دیر برسه، نادیده گرفته بشه
+    const requestIdRef = useRef(0);
 
     /* بستن با کلیک بیرون از دراپ‌داون موضوع */
     useEffect(() => {
@@ -63,9 +64,10 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
     useEffect(() => {
         if (!isOpen) {
             setText("");
-            setTopic("");
+            setTopic(null);
             setTopicQuery("");
             setTopicOpen(false);
+            setResponsePhone([]);
             if (image?.previewUrl) URL.revokeObjectURL(image.previewUrl);
             setImage(null);
         }
@@ -78,6 +80,27 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
         }
     }, [text]);
+
+    /* جست‌وجوی محصول از بک‌اند — با debounce، هر بار متنِ دراپ‌داون عوض بشه */
+    useEffect(() => {
+        const query = topicQuery.trim();
+
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+        }
+
+        if (query.length < MIN_SEARCH_LENGTH) {
+            setResponsePhone([]);
+            setLoadingTopics(false);
+            return;
+        }
+
+        debounceTimerRef.current = setTimeout(() => {
+            fetch_search_good(query);
+        }, SEARCH_DEBOUNCE_MS);
+
+        return () => clearTimeout(debounceTimerRef.current);
+    }, [topicQuery]);
 
     if (!isOpen) return null;
 
@@ -94,9 +117,10 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
         setImage(null);
     }
 
-    function selectTopic(t) {
-        setTopic(t);
+    function selectTopic(product) {
+        setTopic(product);
         setTopicQuery("");
+        setResponsePhone([]);
         setTopicOpen(false);
     }
 
@@ -104,23 +128,54 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
         if (e.target === e.currentTarget) onClose();
     }
 
-    function handleSubmit() {
-        if (!text.trim()) return;
-        onSubmit?.({
-            text: text.trim(),
-            image: image?.file ?? null,
-            topic: topic || null,
-        });
-        onClose();
-    }
+    // این همون چیزیه که موقع تایپ توی دراپ‌داون، با تاخیر (debounce) صدا زده می‌شه
+    const fetch_search_good = async (query) => {
+        const currentRequestId = ++requestIdRef.current;
+        setLoadingTopics(true);
+        try {
+            const { data } = await CHB_send_input_good(query);
+            // اگه در همین فاصله کاربر دوباره تایپ کرده و ریکوئست جدیدتری رفته، این جواب رو نادیده بگیر
+            if (currentRequestId !== requestIdRef.current) return;
+            setResponsePhone(data ?? []);
+        } catch (err) {
+            if (currentRequestId !== requestIdRef.current) return;
+            console.error("خطا در جستجوی محصول:", err);
+            setResponsePhone([]);
+        } finally {
+            if (currentRequestId === requestIdRef.current) {
+                setLoadingTopics(false);
+            }
+        }
+    };
 
-    const filteredTopics =
-        topicQuery.trim().length === 0
-            ? POST_TOPICS
-            : POST_TOPICS.filter((t) => t.includes(topicQuery.trim()));
+    // نتیجه‌ی جست‌وجو دقیقاً همون چیزیه که باید توی دراپ‌داون map بشه —
+    // دیگه نیازی به فیلتر کردن سمت فرانت نیست چون بک‌اند خودش فیلتر شده برمی‌گردونه.
+    const filteredTopics = responsePhone;
 
     const remaining = MAX_CHARS - text.length;
-    const canSubmit = text.trim().length > 0 && remaining >= 0;
+    // انتخاب یه محصول از دراپ‌داون هم الزامیه، چون بدون id واقعیش نمی‌شه پست رو به بک‌اند وصل کرد
+    const canSubmit = text.trim().length > 0 && remaining >= 0 && !!topic;
+
+    const fetch_creat_post = async () => {
+        if (!canSubmit || submitting) return;
+        setSubmitting(true);
+        try {
+            const title = titleRef.current?.value ?? "";
+            const content = text.trim();
+            const phoneId = topic.id; // آیدی محصولی که کاربر از دراپ‌داون انتخاب کرده
+            const imageFile = image?.file ?? null;
+
+            const { data } = await creat_post(phoneId, imageFile, title, content);
+
+            onSubmit?.(data);
+            onClose();
+            console.log(data)
+        } catch (err) {
+            console.error("خطا در ارسال پست:", err);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <div className={styles.overlay} onMouseDown={handleOverlayClick}>
@@ -137,6 +192,12 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
                     <img className={styles.avatar} src={lock} alt="profile" />
 
                     <div className={styles.composeCol}>
+                        <input
+                            ref={titleRef}
+                            className={styles.titleInput}
+                            placeholder="عنوان پست..."
+                        />
+
                         <textarea
                             ref={textareaRef}
                             className={styles.textarea}
@@ -167,7 +228,7 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
                                 onClick={() => setTopicOpen((v) => !v)}
                             >
                                 <span className={!topic ? styles.topicChipPlaceholder : undefined}>
-                                    {topic || "انتخاب محصول"}
+                                    {topic ? topic.name : "انتخاب محصول"}
                                 </span>
                                 <span className={`${styles.chevron} ${topicOpen ? styles.chevronOpen : ""}`}>
                                     ▾
@@ -178,30 +239,36 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
                                 <div className={styles.dropdown}>
                                     <input
                                         className={styles.dropdownSearch}
-                                        placeholder="جست‌وجوی موضوع..."
+                                        placeholder="جست‌وجوی محصول..."
                                         value={topicQuery}
                                         onChange={(e) => setTopicQuery(e.target.value)}
                                         autoFocus
                                     />
-                                    {filteredTopics.length > 0 ? (
+                                    {loadingTopics ? (
+                                        <div className={styles.dropdownEmpty}>در حال جستجو...</div>
+                                    ) : filteredTopics.length > 0 ? (
                                         <ul className={styles.dropdownList}>
-                                            {filteredTopics.map((t) => (
-                                                <li key={t}>
+                                            {filteredTopics.map((p) => (
+                                                <li key={p.id}>
                                                     <button
                                                         type="button"
                                                         className={`${styles.dropdownItem} ${
-                                                            t === topic ? styles.dropdownItemActive : ""
+                                                            topic?.id === p.id ? styles.dropdownItemActive : ""
                                                         }`}
                                                         onMouseDown={(e) => e.preventDefault()}
-                                                        onClick={() => selectTopic(t)}
+                                                        onClick={() => selectTopic(p)}
                                                     >
-                                                        {t}
+                                                        {p.name}
                                                     </button>
                                                 </li>
                                             ))}
                                         </ul>
-                                    ) : (
+                                    ) : topicQuery.trim().length >= MIN_SEARCH_LENGTH ? (
                                         <div className={styles.dropdownEmpty}>موردی پیدا نشد</div>
+                                    ) : (
+                                        <div className={styles.dropdownEmpty}>
+                                            برای جست‌وجو حداقل {MIN_SEARCH_LENGTH} حرف تایپ کن
+                                        </div>
                                     )}
                                 </div>
                             )}
@@ -244,10 +311,10 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
                         </span>
                         <button
                             className={styles.submitBtn}
-                            disabled={!canSubmit}
-                            onClick={handleSubmit}
+                            disabled={!canSubmit || submitting}
+                            onClick={fetch_creat_post}
                         >
-                            پست
+                            {submitting ? "در حال ارسال..." : "پست"}
                         </button>
                     </div>
                 </div>
