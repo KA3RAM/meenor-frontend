@@ -8,7 +8,9 @@ import lock from "../../assets/images/lock.jpeg"
 import sample1 from "../../assets/images/mobile_samples/sample2.jpeg"
 
 /* ---------------------------------- LOGOS --------------------------------- */
-import Likes from "../../assets/icons/PostImages/Likes.svg"
+import Like from "../../assets/icons/PostImages/like.svg"
+import dislike from "../../assets/icons/PostImages/dislike.svg"
+
 import Coments from "../../assets/icons/PostImages/Coments.svg"
 import Views from "../../assets/icons/PostImages/Views.svg"
 import ThreeDots from "../../assets/icons/PostImages/Threedots.svg"
@@ -84,7 +86,12 @@ export default function Post() {
                         </button>
 
                         <button className={styles.LikesWrapper}>
-                            <img src={Likes} alt="" />
+                            <img src={Like} alt="" />
+                            <p>4.7K</p>
+                        </button>
+
+                        <button className={styles.dislikeWrapper}>
+                            <img src={dislike} alt="" />
                             <p>4.7K</p>
                         </button>
 

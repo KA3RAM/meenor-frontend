@@ -15,7 +15,13 @@ import Views from "../../assets/icons/PostImages/Views.svg"
 import ThreeDots from "../../assets/icons/PostImages/Threedots.svg"
 import Saves from "../../assets/icons/PostImages/Saves.svg"
 import Share from "../../assets/icons/PostImages/Share.svg"
-import Like from "../../assets/icons/PostImages/Likes.svg"
+
+
+
+
+import like from "../../assets/icons/PostImages/like.svg"
+import dislike from "../../assets/icons/PostImages/dislike.svg"
+
 import {useNavigate} from "react-router-dom";
 
 export default function Naghdnegar() {
@@ -65,7 +71,12 @@ export default function Naghdnegar() {
                         </button>
 
                         <button className={styles.LikesWrapper}>
-                            <img src={Like} alt="" />
+                            <img src={like} alt="" />
+                            <p>4.7K</p>
+                        </button>
+
+                        <button className={styles.DislikeWrapper}>
+                            <img src={dislike} alt="" />
                             <p>4.7K</p>
                         </button>
 
