@@ -184,6 +184,16 @@ export const feed_post = () => {
 }
 
 
+export const get_post = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/get_post/${input}/`;
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
 
 
 

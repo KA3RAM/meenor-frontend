@@ -186,6 +186,40 @@
     animation: pop 0.3s ease;
 }
 
+
+
+
+
+.filterBTN{
+    display: flex;
+    font-family: "Anjoman";
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    border: none;
+    padding: 1rem;
+    border-radius: 18px;
+    margin-top: 2rem;  
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.842);
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.326);
+    width: 100px;
+    height: 3rem;            
+}
+
+.filterp{
+    font-size: larger;           
+}
+
+
+.FilterIconsvg{
+    width: 20px;
+    height: 20px;
+}
+
+
+
 /* ------------------------- Pop Animation ------------------------- */
 @keyframes pop {
     0% {
@@ -202,6 +236,11 @@
     }
 }
 
+
+
+
+
+
 /* ============================== RESPONSIVE ============================== */
 
 @media (max-width: 768px) {
@@ -214,11 +253,19 @@
         padding: 0.85rem;
     }
 }
-
 @media (max-width: 480px) {
     .LeftSide {
         gap: 12px;
         flex-wrap: wrap;
+    }
+
+    .LeftSide p{
+        gap: 12px;
+        flex-wrap: wrap;
+        display: none;
+    }
+    .LeftSide > button:last-child p {
+        display: inline-block;
     }
 
     .pictureProfile {
@@ -237,5 +284,6 @@
 
     .PostContentWrapper p {
         font-size: 0.92rem;
+        
     }
 }

@@ -1,30 +1,53 @@
 import { useRef, useState } from "react"
 import styles from "./Post.module.css"
 import Art from "../../assets/images/Arthur.jpg"
-
-
-
 import lock from "../../assets/images/lock.jpeg"
 import sample1 from "../../assets/images/mobile_samples/sample2.jpeg"
 
-/* ---------------------------------- LOGOS --------------------------------- */
-import Like from "../../assets/icons/PostImages/like.svg"
-import dislike from "../../assets/icons/PostImages/dislike.svg"
-
-import Coments from "../../assets/icons/PostImages/Coments.svg"
-import Views from "../../assets/icons/PostImages/Views.svg"
-import ThreeDots from "../../assets/icons/PostImages/Threedots.svg"
-import Saves from "../../assets/icons/PostImages/Saves.svg"
-import Share from "../../assets/icons/PostImages/Share.svg"
+/* ---------------------------------- SVG COMPONENTS --------------------------------- */
+import { ReactComponent as CommentsIcon } from "../../assets/icons/PostImages/Coments.svg"
+import { ReactComponent as ViewsIcon } from "../../assets/icons/PostImages/Views.svg"
+import { ReactComponent as ThreeDotsIcon } from "../../assets/icons/PostImages/Threedots.svg"
+import { ReactComponent as SavesIcon } from "../../assets/icons/PostImages/Nsave.svg"
+import { ReactComponent as ShareIcon } from "../../assets/icons/PostImages/Share.svg"
+import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.svg"
+import { ReactComponent as DislikeIcon } from "../../assets/icons/PostImages/dislike.svg"
 
 export default function Post() {
     const [comentText, setComentText] = useState("")
     const textareaRef = useRef(null)
 
-
-
     const MAX_TEXTAREA_HEIGHT = 200 // بعد از این ارتفاع (به px)، خود باکس اسکرول می‌خوره
     const MAX_COMENT_LENGTH = 500 // حداکثر تعداد کاراکتر مجاز برای کامنت
+
+    const [activeStates, setActiveStates] = useState({
+        like: false,
+        dislike: false,
+        save: false,
+    });
+
+    const toggleLike = () => {
+        setActiveStates(prev => ({
+            ...prev,
+            like: !prev.like,
+            dislike: false, // اگه لایک بزنه دیسلایک خاموش بشه
+        }));
+    };
+
+    const toggleDislike = () => {
+        setActiveStates(prev => ({
+            ...prev,
+            dislike: !prev.dislike,
+            like: false, // اگه دیسلایک بزنه لایک خاموش بشه
+        }));
+    };
+
+    const toggleSave = () => {
+        setActiveStates(prev => ({
+            ...prev,
+            save: !prev.save,
+        }));
+    };
 
     const handleComentChange = (e) => {
         const value = e.target.value.slice(0, MAX_COMENT_LENGTH)
@@ -52,13 +75,10 @@ export default function Post() {
         el.scrollIntoView({ behavior: "smooth", block: "center" })
     }
 
-
-
-    return(
+    return (
         <div className={styles.wrapper}>
 
             <div className={styles.UserPost}>
-
 
                 <div className={styles.PostHeader}>
                     <div className={styles.HeaderInfo}>
@@ -70,7 +90,7 @@ export default function Post() {
                     </div>
 
                     <button className={styles.ThreeDots}>
-                        <img src={ThreeDots} alt="" />
+                        <ThreeDotsIcon />
                     </button>
                 </div>
 
@@ -84,35 +104,46 @@ export default function Post() {
 
                 <div className={styles.PostStats}>
                     <div className={styles.LeftSide}>
-                        <button className={styles.SavesWrapper}>
-                            <img src={Saves} alt="" />
+
+                        <button
+                            className={`${styles.SavesWrapper} ${activeStates.save ? styles.Active : ""}`}
+                            onClick={toggleSave}
+                        >
+                            <SavesIcon />
                             <p>571</p>
                         </button>
 
-                        <button className={styles.LikesWrapper}>
-                            <img src={Like} alt="" />
+                        <button
+                            className={`${styles.LikesWrapper} ${activeStates.like ? styles.Active : ""}`}
+                            onClick={toggleLike}
+                        >
+                            <LikeIcon />
                             <p>4.7K</p>
                         </button>
 
-                        <button className={styles.dislikeWrapper}>
-                            <img src={dislike} alt="" />
+                        <button
+                            className={`${styles.DislikeWrapper} ${activeStates.dislike ? styles.Active : ""}`}
+                            onClick={toggleDislike}
+                        >
+                            <DislikeIcon />
                             <p>4.7K</p>
                         </button>
 
                         <button className={styles.ComentsWrapper}>
-                            <img src={Coments} alt="" />
+                            <CommentsIcon />
                             <p>307</p>
                         </button>
 
                         <button className={styles.ViewsWrapper}>
-                            <img src={Views} alt="" />
+                            <ViewsIcon />
                             <p>417K</p>
                         </button>
+                        
                     </div>
 
                     <div className={styles.RightSide}>
                         <button className={styles.SharesWrapper}>
-                            <img src={Share} alt="" />
+                            <ShareIcon />
                         </button>
                     </div>
                 </div>
@@ -204,11 +235,6 @@ export default function Post() {
 
 
             </div>
-
-
-
-
-
 
         </div>
     )

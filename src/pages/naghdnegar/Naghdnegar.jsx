@@ -11,15 +11,29 @@ import { ReactComponent as SavesIcon } from "../../assets/icons/PostImages/Saves
 import { ReactComponent as ShareIcon } from "../../assets/icons/PostImages/Share.svg"
 import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.svg"
 import { ReactComponent as DislikeIcon } from "../../assets/icons/PostImages/dislike.svg"
+import { ReactComponent as FilterIcon} from "../../assets/icons/PostImages/Filter.svg"
 
 import { useNavigate } from "react-router-dom";
-import {feed_post} from "../../services/Axios";
+import FilterModal from "../../components/FilterModal/FilterModal"; // مسیر رو با محل فایل واقعی تطبیق بده
+
+
 
 export default function Naghdnegar() {
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+
+
+
+// روی دکمه فیلتر موجود:
+<button onClick={() => setIsFilterOpen(true)}>
+    <FilterIcon/>
+    <p>فیلتر</p>
+</button>
+
+
+
 
     const navigate = useNavigate();
-
-    const [feedPosts, setFeedPosts] = useState([]);
 
     const [activeStates, setActiveStates] = useState({
         like: false,
@@ -58,93 +72,95 @@ export default function Naghdnegar() {
         navigate("/register");
     }
 
-    const fetch_get_feed = async () => {
-        try{
-            let {data: data} = await feed_post();
-            setFeedPosts(data);
-        }
-        catch(err){
-            console.log(err);
-        }
-    }
-
     return (
         <div className={styles.wrapper}>
+            <div className={styles.Filterwrapper}>  
+                <button className={styles.filterBTN} onClick={() => setIsFilterOpen(true)}>
+                    <FilterIcon className={styles.FilterIconsvg}/>
+                    <p className={styles.filterp}>فیلتر</p>
+                </button>
 
-            {feedPosts.map((post, index) => {
-                <div className={styles.UserPost}>
+                <FilterModal
+                    isOpen={isFilterOpen}
+                    onClose={() => setIsFilterOpen(false)}
+                    products={[
+                        { id: 1, name: "محصول نمونه", price: "۱۲۰,۰۰۰ تومان", image: sample1 },
+                    ]}
+                    onSelectProduct={(p) => console.log("انتخاب شد:", p)}
+                    onApply={(term) => console.log("جستجوی نهایی:", term)}
+                />
 
-                    <div className={styles.PostHeader}>
-                        <div className={styles.HeaderInfo}>
-                            <img className={styles.pictureProfile} src={Art} alt="" />
-                            <p className={styles.Name}>Arthur MacWaters</p>
-                            <p className={styles.Handle}>@ArthurMacwaters</p>
-                            <span className={styles.Dot}>·</span>
-                            <p className={styles.Date}>Jul 28</p>
-                        </div>
+            </div>
+            <div className={styles.UserPost}>
 
-                        <button className={styles.ThreeDots}>
-                            <ThreeDotsIcon />
+                <div className={styles.PostHeader}>
+                    <div className={styles.HeaderInfo}>
+                        <img className={styles.pictureProfile} src={Art} alt="" />
+                        <p className={styles.Name}>Arthur MacWaters</p>
+                        <p className={styles.Handle}>@ArthurMacwaters</p>
+                        <span className={styles.Dot}>·</span>
+                        <p className={styles.Date}>Jul 28</p>
+                    </div>
+
+                    <button className={styles.ThreeDots}>
+                        <ThreeDotsIcon />
+                    </button>
+                </div>
+
+                <div className={styles.PostContentWrapper}>
+                    <p>I met with the team of the Lockheed Martin defense company – one of the strongest enterprises in the United States, with which we have been cooperating for a long time. Lockheed Martin is the company that produces ATACMS, HIMARS, F-16s, and missiles for Patriot systems.</p>
+                </div>
+
+                <div className={styles.PostImgWrapper}>
+                    <img className={styles.PostImg} src={sample1} alt="" />
+                </div>
+
+                <div className={styles.PostStats}>
+                    <div className={styles.LeftSide}>
+
+                        <button
+                            className={`${styles.SavesWrapper} ${activeStates.save ? styles.Active : ""}`}
+                            onClick={toggleSave}
+                        >
+                            <SavesIcon />
+                            <p>571</p>
+                        </button>
+
+                        <button
+                            className={`${styles.LikesWrapper} ${activeStates.like ? styles.Active : ""}`}
+                            onClick={toggleLike}
+                        >
+                            <LikeIcon />
+                            <p>4.7K</p>
+                        </button>
+
+                        <button
+                            className={`${styles.DislikeWrapper} ${activeStates.dislike ? styles.Active : ""}`}
+                            onClick={toggleDislike}
+                        >
+                            <DislikeIcon />
+                            <p>4.7K</p>
+                        </button>
+
+                        <button className={styles.ComentsWrapper}>
+                            <CommentsIcon />
+                            <p>307</p>
+                        </button>
+
+                        <button className={styles.ViewsWrapper}>
+                            <ViewsIcon />
+                            <p>417K</p>
                         </button>
                     </div>
 
-                    <div className={styles.PostContentWrapper}>
-                        <p>I met with the team of the Lockheed Martin defense company – one of the strongest enterprises in the United States, with which we have been cooperating for a long time. Lockheed Martin is the company that produces ATACMS, HIMARS, F-16s, and missiles for Patriot systems.</p>
+                    <div className={styles.RightSide}>
+                        <button className={styles.SharesWrapper}>
+                            <ShareIcon />
+                        </button>
                     </div>
-
-                    <div className={styles.PostImgWrapper}>
-                        <img className={styles.PostImg} src={sample1} alt="" />
-                    </div>
-
-                    <div className={styles.PostStats}>
-                        <div className={styles.LeftSide}>
-
-                            <button
-                                className={`${styles.SavesWrapper} ${activeStates.save ? styles.Active : ""}`}
-                                onClick={toggleSave}
-                            >
-                                <SavesIcon />
-                                <p>571</p>
-                            </button>
-
-                            <button
-                                className={`${styles.LikesWrapper} ${activeStates.like ? styles.Active : ""}`}
-                                onClick={toggleLike}
-                            >
-                                <LikeIcon />
-                                <p>4.7K</p>
-                            </button>
-
-                            <button
-                                className={`${styles.DislikeWrapper} ${activeStates.dislike ? styles.Active : ""}`}
-                                onClick={toggleDislike}
-                            >
-                                <DislikeIcon />
-                                <p>4.7K</p>
-                            </button>
-
-                            <button className={styles.ComentsWrapper}>
-                                <CommentsIcon />
-                                <p>307</p>
-                            </button>
-
-                            <button className={styles.ViewsWrapper}>
-                                <ViewsIcon />
-                                <p>417K</p>
-                            </button>
-                        </div>
-
-                        <div className={styles.RightSide}>
-                            <button className={styles.SharesWrapper}>
-                                <ShareIcon />
-                            </button>
-                        </div>
-                    </div>
-
                 </div>
-            })
 
-            }
+            </div>
 
         </div>
     )

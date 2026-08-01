@@ -1,0 +1,260 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal {
+    font-family: "Anjoman";
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    margin: 1rem;
+    background: #0e0e0ee6;
+    border: 1px solid rgba(255, 255, 255, 0.162);
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: popIn 0.2s ease;
+}
+
+/* ------------------------- Header ------------------------- */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.closeBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+    border: none;
+    background: none;
+    color: #71767b;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.closeBtn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+/* ------------------------- Search ------------------------- */
+.searchWrapper {
+    position: relative;
+    padding: 1rem 1.25rem 0.25rem;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* border: 1px solid rgba(255, 255, 255, 0.162); */
+    border-radius: 14px;
+    padding: 0.65rem 0.9rem;
+    transition: border-color 0.2s ease;
+}
+
+.searchBox:focus-within {
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.searchIcon {
+    color: #71767b;
+    flex-shrink: 0;
+}
+
+.searchInput {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-family: "Anjoman";
+    font-size: 0.95rem;
+}
+
+.searchInput::placeholder {
+    color: #71767b;
+}
+
+.clearIcon {
+    background: none;
+    border: none;
+    color: #71767b;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 2px;
+    transition: color 0.2s ease;
+}
+
+.clearIcon:hover {
+    color: #ffffff;
+}
+
+/* ------------------------- Dropdown ------------------------- */
+.dropdown {
+    margin-top: 0.6rem;
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.162);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: none;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    cursor: pointer;
+    text-align: right;
+    transition: background 0.2s ease;
+}
+
+.dropdownItem:last-child {
+    border-bottom: none;
+}
+
+.dropdownItem:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.itemImage {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.itemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.itemName {
+    font-size: 0.9rem;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.itemPrice {
+    font-size: 0.8rem;
+    color: #71767b;
+}
+
+.emptyState {
+    padding: 1rem;
+    text-align: center;
+    color: #71767b;
+    font-size: 0.9rem;
+}
+
+/* ------------------------- Footer ------------------------- */
+.footer {
+    display: flex;
+    gap: 10px;
+    padding: 1.1rem 1.25rem;
+    margin-top: 0.5rem;
+}
+
+.resetBtn,
+.applyBtn {
+    flex: 1;
+    height: 3rem;
+    border-radius: 14px;
+    font-family: "Anjoman";
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease, background 0.2s ease;
+}
+
+.resetBtn {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.326);
+    color: rgba(255, 255, 255, 0.842);
+}
+
+.resetBtn:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.applyBtn {
+    background: #ffffff;
+    border: none;
+    color: #0f0f10;
+    font-weight: 700;
+}
+
+.applyBtn:hover {
+    opacity: 0.9;
+}
+
+/* ------------------------- Animations ------------------------- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ------------------------- Responsive ------------------------- */
+@media (max-width: 480px) {
+    .modal {
+        max-width: 100%;
+        margin: 0.75rem;
+    }
+
+    .header {
+        padding: 0.9rem 1rem;
+    }
+
+    .searchWrapper {
+        padding: 0.9rem 1rem 0.25rem;
+    }
+
+    .footer {
+        padding: 1rem;
+    }
+}
