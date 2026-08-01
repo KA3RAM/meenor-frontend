@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import styles from "./Naghdnegar.module.css"
 import Art from "../../assets/images/Arthur.jpg"
 import sample1 from "../../assets/images/mobile_samples/sample2.jpeg"
@@ -11,28 +11,15 @@ import { ReactComponent as SavesIcon } from "../../assets/icons/PostImages/Saves
 import { ReactComponent as ShareIcon } from "../../assets/icons/PostImages/Share.svg"
 import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.svg"
 import { ReactComponent as DislikeIcon } from "../../assets/icons/PostImages/dislike.svg"
-import { ReactComponent as FilterIcon} from "../../assets/icons/PostImages/Filter.svg"
+import { ReactComponent as FilterIcon } from "../../assets/icons/PostImages/Filter.svg"
+// import { ReactComponent as ReportIcon } from "../../assets/icons/PostImages/Report.svg" // آیکون گزارش - اگه نداری می‌تونی حذفش کنی
+// import { ReactComponent as CopyIcon } from "../../assets/icons/PostImages/Copy.svg" // آیکون کپی - اگه نداری می‌تونی حذفش کنی
 
 import { useNavigate } from "react-router-dom";
-import FilterModal from "../../components/FilterModal/FilterModal"; // مسیر رو با محل فایل واقعی تطبیق بده
-
-
+import FilterModal from "../../components/FilterModal/FilterModal";
 
 export default function Naghdnegar() {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-
-
-
-
-// روی دکمه فیلتر موجود:
-<button onClick={() => setIsFilterOpen(true)}>
-    <FilterIcon/>
-    <p>فیلتر</p>
-</button>
-
-
-
-
     const navigate = useNavigate();
 
     const [activeStates, setActiveStates] = useState({
@@ -41,11 +28,53 @@ export default function Naghdnegar() {
         save: false,
     });
 
+    // ---------- منوهای تولتیپ ----------
+    const [openMenu, setOpenMenu] = useState(null); // null | "dots" | "share"
+    const [copied, setCopied] = useState(false);
+
+    const dotsRef = useRef(null);
+    const shareRef = useRef(null);
+
+    useEffect(() => {
+        function handleClickOutside(e) {
+            if (
+                dotsRef.current && !dotsRef.current.contains(e.target) &&
+                shareRef.current && !shareRef.current.contains(e.target)
+            ) {
+                setOpenMenu(null);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const toggleMenu = (menuName) => {
+        setOpenMenu(prev => (prev === menuName ? null : menuName));
+    };
+
+    const handleReport = () => {
+        // اینجا منطق ارسال گزارش رو اضافه کن (مثلا یک درخواست API)
+        console.log("گزارش پست ارسال شد");
+        setOpenMenu(null);
+    };
+
+    const handleCopyLink = async () => {
+        const postUrl = `${window.location.origin}/post/${1}`; // آیدی واقعی پست رو جایگزین کن
+        try {
+            await navigator.clipboard.writeText(postUrl);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        } catch (err) {
+            console.error("کپی نشد:", err);
+        }
+        setOpenMenu(null);
+    };
+
     const toggleLike = () => {
         setActiveStates(prev => ({
             ...prev,
             like: !prev.like,
-            dislike: false, // اگه لایک بزنه دیسلایک خاموش بشه
+            dislike: false,
         }));
     };
 
@@ -53,7 +82,7 @@ export default function Naghdnegar() {
         setActiveStates(prev => ({
             ...prev,
             dislike: !prev.dislike,
-            like: false, // اگه دیسلایک بزنه لایک خاموش بشه
+            like: false,
         }));
     };
 
@@ -64,19 +93,15 @@ export default function Naghdnegar() {
         }));
     };
 
-    const goToRegister = () => {
-        navigate("/register");
-    }
-
     if (!localStorage.getItem("token")) {
         navigate("/register");
     }
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.Filterwrapper}>  
+            <div className={styles.Filterwrapper}>
                 <button className={styles.filterBTN} onClick={() => setIsFilterOpen(true)}>
-                    <FilterIcon className={styles.FilterIconsvg}/>
+                    <FilterIcon className={styles.FilterIconsvg} />
                     <p className={styles.filterp}>فیلتر</p>
                 </button>
 
@@ -89,10 +114,9 @@ export default function Naghdnegar() {
                     onSelectProduct={(p) => console.log("انتخاب شد:", p)}
                     onApply={(term) => console.log("جستجوی نهایی:", term)}
                 />
-
             </div>
-            <div className={styles.UserPost}>
 
+            <div className={styles.UserPost}>
                 <div className={styles.PostHeader}>
                     <div className={styles.HeaderInfo}>
                         <img className={styles.pictureProfile} src={Art} alt="" />
@@ -102,9 +126,24 @@ export default function Naghdnegar() {
                         <p className={styles.Date}>Jul 28</p>
                     </div>
 
-                    <button className={styles.ThreeDots}>
-                        <ThreeDotsIcon />
-                    </button>
+                    {/* -------- دکمه سه‌نقطه + منو -------- */}
+                    <div className={styles.MenuWrapper} ref={dotsRef}>
+                        <button
+                            className={styles.ThreeDots}
+                            onClick={() => toggleMenu("dots")}
+                        >
+                            <ThreeDotsIcon />
+                        </button>
+
+                        {openMenu === "dots" && (
+                            <div className={styles.TooltipMenu}>
+                                <button className={styles.TooltipItem} onClick={handleReport}>
+                                    {/* <ReportIcon className={styles.TooltipIcon} /> */}
+                                    <span>گزارش پست</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className={styles.PostContentWrapper}>
@@ -117,7 +156,6 @@ export default function Naghdnegar() {
 
                 <div className={styles.PostStats}>
                     <div className={styles.LeftSide}>
-
                         <button
                             className={`${styles.SavesWrapper} ${activeStates.save ? styles.Active : ""}`}
                             onClick={toggleSave}
@@ -154,14 +192,27 @@ export default function Naghdnegar() {
                     </div>
 
                     <div className={styles.RightSide}>
-                        <button className={styles.SharesWrapper}>
-                            <ShareIcon />
-                        </button>
+                        {/* -------- دکمه شیر + منو -------- */}
+                        <div className={styles.MenuWrapper} ref={shareRef}>
+                            <button
+                                className={styles.SharesWrapper}
+                                onClick={() => toggleMenu("share")}
+                            >
+                                <ShareIcon />
+                            </button>
+
+                            {openMenu === "share" && (
+                                <div className={`${styles.TooltipMenu} ${styles.TooltipMenuLeft}`}>
+                                    <button className={styles.TooltipItem} onClick={handleCopyLink}>
+                                        {/* <CopyIcon className={styles.TooltipIcon} /> */}
+                                        <span>{copied ? "کپی شد!" : "کپی کردن لینک"}</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
     )
 }
