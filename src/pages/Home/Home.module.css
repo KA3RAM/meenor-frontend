@@ -31,10 +31,10 @@
 #chartContainer { width: 100%; height: 240px; }
 
 
-.chat { display: flex; flex-direction: column; gap: 0.6rem; border-radius: 12px; padding: 0.6rem; background: rgba(0,0,0,0.18); max-height: 200px; overflow-y: none; }
+.chat { display: flex; flex-direction: column; gap: 0.6rem; border-radius: 12px; padding: 0.5rem; background: rgba(0,0,0,0.18); max-height: 300px; overflow-y: none; }
 .msg { padding: 0.5rem 0.8rem; border-radius: 12px; max-width: 80%; }
 .msg.user {align-self: flex-start; background: rgba(0,255,180,0.12); color: #bfffe6; }
-.msg.bot { align-self: flex-end; background: rgba(255,255,255,0.06); color: #fff; }
+.msg.bot { align-self: flex-end; background: rgba(255,255,255,0.06); color: #fff;}
 .chat-input { display: flex; gap: 0.6rem; margin-top: 0.6rem; }
 .chat-input input {text-align: right; flex: 1; padding: 0.6rem 0.8rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); color: white; }
 .chat-input button { padding: 0.6rem 0.9rem; border-radius: 10px; border: none; background: rgba(0,229,255,.95); color: #030510; font-weight: 700; }
@@ -193,13 +193,19 @@
 @media (max-width: 768px) {
     .hero-txt {
         margin-top: 5rem;
+        flex-direction: column;
         justify-content: center;
         text-align: center;
     }
 
     .hero-text {
+        order: 1;
         text-align: center;
-        margin: 0 auto 3rem;
+        margin: 0 auto 2rem;
+    }
+
+    .hero-txt .lottie {
+        order: 2;
     }
 
     .hero-text h1 {

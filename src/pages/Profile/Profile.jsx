@@ -1,14 +1,31 @@
 import styles from "./Profile.module.css"
-import image from "../../assets/images/star-wars-the-mandalorian-and-grogu-movie-7l.jpg"
 import image2 from "../../assets/images/Lock.jpg"
 import {
-add_to_wishlist_chatBot, edit_user_profile, edit_user_profile_password,
-get_all_wishlist_phone,
-get_user_profile,
-login_send_data_token
+    add_to_wishlist_chatBot, edit_user_profile, edit_user_profile_password,
+    get_all_wishlist_phone,
+    get_user_profile,
+    login_send_data_token
 } from "../../services/Axios";
 import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
+
+
+function DefaultUserIcon() {
+    return (
+        <div style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+        }}>
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#faf9f9" style={{width: "40%", height: "40%"}}>
+                <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#ffffff"></path>
+                <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#ffffff"></path>
+            </svg>
+        </div>
+    )
+}
 
 
 
@@ -42,6 +59,20 @@ export default function Profile() {
     const [editUserInfoPassWord, setEditUserInfoPassWord] = useState({
         password: ""
     })
+
+    // --- استیت‌های مربوط به عکس پروفایل (فقط UI) ---
+    const [profileImagePreview, setProfileImagePreview] = useState(null)
+    const fileInputRef = useRef(null)
+
+    const handleAvatarClick = () => {
+        if (isEditing) fileInputRef.current?.click()
+    }
+
+    const handleImageChange = (e) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        setProfileImagePreview(URL.createObjectURL(file))
+    }
 
 
     const removeToken = () => {
@@ -133,8 +164,36 @@ export default function Profile() {
     return (
         <div className={styles.profile_wrapper}>
             <div className={`${styles.top_profile_card} ${isEditing ? styles.editing : ""}`}>
-                <div className={styles.profile_picture_wrapper}>
-                    <img className={styles.profile_picture} src={image} alt="profile" />
+                <div
+                    className={styles.profile_picture_wrapper}
+                    onClick={handleAvatarClick}
+                    style={{ cursor: isEditing ? "pointer" : "default" }}
+                >
+                    {profileImagePreview || usersInfo.profile_image ? (
+                        <img
+                            className={styles.profile_picture}
+                            src={profileImagePreview || usersInfo.profile_image}
+                            alt="profile"
+                        />
+                    ) : (
+                        <DefaultUserIcon  />
+                    )}
+
+                    {isEditing && (
+                        <div className={styles.avatar_overlay}>
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="white">
+                                <path d="M9 2l-1.5 2H4a2 2 0 00-2 2v11a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2h-3.5L15 2H9zm3 6a5 5 0 110 10 5 5 0 010-10z"/>
+                            </svg>
+                        </div>
+                    )}
+
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={handleImageChange}
+                    />
                 </div>
 
                 {
@@ -211,13 +270,6 @@ export default function Profile() {
 
 
             </div>
-
-
-
-
-
-
-
 
 
 
