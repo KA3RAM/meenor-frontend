@@ -11,10 +11,27 @@ import { ReactComponent as SavesIcon } from "../../assets/icons/PostImages/Saves
 import { ReactComponent as ShareIcon } from "../../assets/icons/PostImages/Share.svg"
 import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.svg"
 import { ReactComponent as DislikeIcon } from "../../assets/icons/PostImages/dislike.svg"
+import { ReactComponent as FilterIcon} from "../../assets/icons/PostImages/Filter.svg"
 
 import { useNavigate } from "react-router-dom";
+import FilterModal from "../../components/FilterModal/FilterModal"; // مسیر رو با محل فایل واقعی تطبیق بده
+
+
 
 export default function Naghdnegar() {
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+
+
+
+// روی دکمه فیلتر موجود:
+<button onClick={() => setIsFilterOpen(true)}>
+    <FilterIcon/>
+    <p>فیلتر</p>
+</button>
+
+
+
 
     const navigate = useNavigate();
 
@@ -57,7 +74,23 @@ export default function Naghdnegar() {
 
     return (
         <div className={styles.wrapper}>
+            <div className={styles.Filterwrapper}>  
+                <button className={styles.filterBTN} onClick={() => setIsFilterOpen(true)}>
+                    <FilterIcon className={styles.FilterIconsvg}/>
+                    <p className={styles.filterp}>فیلتر</p>
+                </button>
 
+                <FilterModal
+                    isOpen={isFilterOpen}
+                    onClose={() => setIsFilterOpen(false)}
+                    products={[
+                        { id: 1, name: "محصول نمونه", price: "۱۲۰,۰۰۰ تومان", image: sample1 },
+                    ]}
+                    onSelectProduct={(p) => console.log("انتخاب شد:", p)}
+                    onApply={(term) => console.log("جستجوی نهایی:", term)}
+                />
+
+            </div>
             <div className={styles.UserPost}>
 
                 <div className={styles.PostHeader}>

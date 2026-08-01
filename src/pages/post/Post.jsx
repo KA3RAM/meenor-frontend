@@ -138,6 +138,7 @@ export default function Post() {
                             <ViewsIcon />
                             <p>417K</p>
                         </button>
+                        
                     </div>
 
                     <div className={styles.RightSide}>
