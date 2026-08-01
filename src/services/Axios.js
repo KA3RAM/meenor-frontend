@@ -194,7 +194,29 @@ export const get_post = (input) => {
     })
 }
 
+export const reaction_change_post = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/react_post/${input}/`;
+    const data = {
+        "reaction" : input
+    }
+    return axios.post(url, data ,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
 
+
+export const filter_post = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/filter_post/${input}/`
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
 
 
 
