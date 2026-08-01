@@ -129,7 +129,10 @@ function buildComparisonSections(productA, productB) {
         if (isNumericField) {
             if (typeof valueA !== "number" || typeof valueB !== "number") continue; // یکی از دو محصول این فیلد رو نداره، قابل مقایسه نیست
             const lowerIsBetter = LOWER_IS_BETTER.has(key);
-            let winner = null;
+            // برخلاف قبل که برای مساوی بودن winner=null می‌ذاشتیم (رنگ خنثی آبی/نارنجی)،
+            // الان یه حالت "tie" جدا داریم؛ در این حالت هر دو طرف رنگ فیروزه‌ای (برنده) می‌گیرن —
+            // چون وقتی مقدارشون برابره، هر دو "برنده"‌ی اون ویژگی حساب می‌شن.
+            let winner = "tie";
             if (valueA !== valueB) {
                 const aIsBetter = lowerIsBetter ? valueA < valueB : valueA > valueB;
                 winner = aIsBetter ? "A" : "B";
@@ -170,6 +173,30 @@ function buildComparisonSections(productA, productB) {
 
 
 
+// مقادیر متنیِ بعضی فیلدها (مثل SIM یا دوربین) با \n جدا شدن و می‌تونن چند خط باشن.
+// به‌جای نشون‌دادن یه بلوک متنیِ فشرده، هر خط رو جدا و با یه خط‌چین بین خط‌ها نشون می‌دیم
+// تا موقع مقایسه‌ی دو محصول با مشخصات طولانی (مثل چند حسگر دوربین)، خواناتر باشه.
+function MultilineValue({ value }) {
+    if (typeof value !== "string" || !value.includes("\n")) {
+        return <>{value}</>;
+    }
+
+    const lines = value
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+    return (
+        <div className={styles.specLines}>
+            {lines.map((line, i) => (
+                <div key={i} className={styles.specLineItem}>
+                    {line}
+                </div>
+            ))}
+        </div>
+    );
+}
+
 function ComparisonBlock({ productA, productB }) {
     // هوک‌ها همیشه باید اول و بدون شرط صدا زده بشن (قانون Rules of Hooks)
     const [animated, setAnimated] = useState(false);
@@ -206,6 +233,7 @@ function ComparisonBlock({ productA, productB }) {
                     )}
                     <span className={styles.comparisonHeaderA}>{nameA}</span>
                 </div>
+                <div className={styles.comparisonVsDivider}>VS</div>
                 <div className={styles.comparisonHeaderSide}>
                     {productB.image_link && (
                         <img
@@ -231,29 +259,17 @@ function ComparisonBlock({ productA, productB }) {
                             const rowMax = Math.max(row.valueA, row.valueB) || 1;
 
                             const barClassA =
-                                row.winner === "A"
-                                    ? styles.barWinner
-                                    : row.winner === "B"
-                                        ? styles.barLoser
-                                        : styles.barNeutralA;
+                                row.winner === "B"
+                                    ? styles.barLoser
+                                    : styles.barWinner; // "A" یا "tie" هر دو فیروزه‌ای می‌شن
                             const barClassB =
-                                row.winner === "B"
-                                    ? styles.barWinner
-                                    : row.winner === "A"
-                                        ? styles.barLoser
-                                        : styles.barNeutralB;
-                            const valueClassA =
                                 row.winner === "A"
-                                    ? styles.valueWinner
-                                    : row.winner === "B"
-                                        ? styles.valueLoser
-                                        : "";
+                                    ? styles.barLoser
+                                    : styles.barWinner; // "B" یا "tie" هر دو فیروزه‌ای می‌شن
+                            const valueClassA =
+                                row.winner === "B" ? styles.valueLoser : styles.valueWinner;
                             const valueClassB =
-                                row.winner === "B"
-                                    ? styles.valueWinner
-                                    : row.winner === "A"
-                                        ? styles.valueLoser
-                                        : "";
+                                row.winner === "A" ? styles.valueLoser : styles.valueWinner;
 
                             // مقدار نهایی هر بار؛ تا وقتی animated نشده، صفره تا انیمیشن fill از صفر شروع بشه
                             const targetWidthA = (row.valueA / rowMax) * 100;
@@ -311,8 +327,12 @@ function ComparisonBlock({ productA, productB }) {
                         {textRows.map((row) => (
                             <tr key={row.key}>
                                 <td>{row.label}</td>
-                                <td className={styles.specValue}>{row.valueA}</td>
-                                <td className={styles.specValue}>{row.valueB}</td>
+                                <td className={styles.specValue}>
+                                    <MultilineValue value={row.valueA} />
+                                </td>
+                                <td className={styles.specValue}>
+                                    <MultilineValue value={row.valueB} />
+                                </td>
                             </tr>
                         ))}
                         </tbody>
@@ -486,8 +506,16 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
 
     const textareaRef = useRef(null);
     const listEndRef = useRef(null);
+    // وقتی مقایسه‌ی جدید تازه رندر می‌شه، نمی‌خوایم صفحه خودکار بره پایین (که یعنی
+    // کاربر مجبور بشه دوباره اسکرول کنه بالا تا چارت ساید‌بای‌ساید رو ببینه).
+    // این پرچم فقط برای همون یه‌بار، افکتِ اسکرولِ زیرش رو غیرفعال می‌کنه.
+    const skipAutoScrollRef = useRef(false);
 
     useEffect(() => {
+        if (skipAutoScrollRef.current) {
+            skipAutoScrollRef.current = false;
+            return;
+        }
         listEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages, sending]);
 
@@ -521,6 +549,8 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
         morphTo("chat", () => {
             onCompare?.(a, b, { productA: selectedProductA, productB: selectedProductB });
 
+            // این‌جا رندر اولیه‌ی مقایسه‌ست؛ نمی‌خوایم افکتِ اسکرول-به-پایین این‌بار اجرا بشه.
+            skipAutoScrollRef.current = true;
             setMessages([
                 {
                     id: Date.now(),
@@ -528,12 +558,6 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
                     type: "comparison",
                     productA: selectedProductA,
                     productB: selectedProductB,
-                },
-                {
-                    id: Date.now() + 1,
-                    role: "assistant",
-                    type: "text",
-                    text: "مقایسه این دو انجام شد ✅",
                 },
             ]);
         });
