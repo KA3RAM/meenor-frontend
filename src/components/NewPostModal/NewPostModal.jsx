@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./NewPostModal.module.css";
 import lock from "../../assets/images/Lock.jpg"
-import {CHB_send_input_good, creat_post} from "../../services/Axios";
+import {CHB_send_input_good, creat_post, user_profile} from "../../services/Axios";
 
 // حداقل تعداد کاراکتری که باید تایپ بشه تا ریکوئست جستجوی محصول زده بشه
 const MIN_SEARCH_LENGTH = 2;
@@ -24,6 +24,8 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
     const [loadingTopics, setLoadingTopics] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
+    const [usersProfile, setUsersProfile] = useState();
+
     const fileInputRef = useRef(null);
     const topicWrapperRef = useRef(null);
     const textareaRef = useRef(null);
@@ -32,8 +34,22 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
     // شماره‌ی هر ریکوئست؛ تا اگه جواب یه ریکوئستِ قدیمی دیر برسه، نادیده گرفته بشه
     const requestIdRef = useRef(0);
 
+    const fetch_get_user_profile = async () => {
+        try{
+            let{data:data} = await user_profile()
+            setUsersProfile(data)
+            console.log("data:", data)
+        }
+        catch(err){
+            console.error("STATUS:", err.response?.status);
+            console.error("ERROR DATA:", err.response?.data);
+            console.error("ERROR:", err);        }
+    }
+
+
     /* بستن با کلیک بیرون از دراپ‌داون موضوع */
     useEffect(() => {
+        fetch_get_user_profile()
         function handleClickOutside(e) {
             if (topicWrapperRef.current && !topicWrapperRef.current.contains(e.target)) {
                 setTopicOpen(false);
@@ -175,6 +191,8 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
         }
     };
 
+
+
     return (
         <div className={styles.overlay} onMouseDown={handleOverlayClick}>
             <div className={styles.modal}>
@@ -187,7 +205,7 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
                 </div>
 
                 <div className={styles.body}>
-                    <img className={styles.avatar} src={lock} alt="profile" />
+                    <img className={styles.avatar} src={`http://127.0.0.1:8000${usersProfile.profile_pic}`} alt="profile" />
 
                     <div className={styles.composeCol}>
                         <textarea

@@ -1,5 +1,5 @@
 // ChatLayout.jsx (updated)
-import { Outlet } from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import styles from "./ChatLayout.module.css";
 import { NavLink} from "react-router-dom";
 import {useEffect, useState} from "react";
@@ -34,6 +34,11 @@ export default function ChatLayout() {
         { to: "/about", label: "درباره ما", icon: AboutUs },
     ];
     const [userProfile, setUserProfile] = useState({});
+
+    const navigate = useNavigate();
+    const goToProfile = () => {
+        navigate("/profile");
+    }
 
     useEffect(() => {
         const fetch_get_user_profile_short = async () =>{
@@ -83,7 +88,7 @@ export default function ChatLayout() {
                     + پست جدید
                 </button>
 
-                <div className={styles.ButtomWrapper}>
+                <div className={styles.ButtomWrapper} onClick={goToProfile}>
                     <div className={styles.ButtomProfileCard}>
                         <img className={styles.ProfileCard} src={`http://127.0.0.1:8000${userProfile.profile_pic}`} alt="profile" />
                     </div>

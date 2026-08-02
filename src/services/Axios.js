@@ -93,7 +93,7 @@ export const check_if_wishlist_chatBot = (input) => {
 }
 export const get_all_wishlist_phone = () => {
     const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/chatbot/wishlisted_phone/`
+    const url = `http://127.0.0.1:8000/chatbot/wishlisted_phones/`
     return axios.get(url,{
         headers: {
             "authorization": `Token ${token}`,
@@ -291,7 +291,7 @@ export const set_comment = (postId, input) => {
 // جواب get_post/get_comments برمی‌گرده).
 export const get_poster_profile = (input) => {
     const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/get_profile/${input}/`
+    const url = `http://127.0.0.1:8000/account/get_profile/${input}/`
     return axios.get(url, {
         headers: {
             "authorization": `Token ${token}`,

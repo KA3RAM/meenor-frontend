@@ -367,6 +367,7 @@ export default function Post() {
                             className={styles.SendComent}
                             disabled={!comentText.trim() || submittingComment}
                             onClick={handleSendComment}
+                            style={{"cursor": "pointer"}}
                         >
                             {submittingComment ? "..." : "پاسخ"}
                         </button>
