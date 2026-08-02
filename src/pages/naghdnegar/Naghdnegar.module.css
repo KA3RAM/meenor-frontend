@@ -243,6 +243,22 @@
     margin: 0;
 }
 
+/* توستِ کوچیکِ فیدبک بعد از کپی‌شدن لینک پست (دکمه‌ی شیر) */
+.CopiedToast {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    right: 0;
+    background: #1d9bf0;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    animation: fadeIn 0.15s ease;
+}
+
 .TooltipMenu {
     position: absolute;
     top: calc(100% + 6px);

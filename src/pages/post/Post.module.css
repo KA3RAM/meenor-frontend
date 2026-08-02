@@ -137,6 +137,38 @@
     align-items: center;
 }
 
+/* رَپِر دکمه‌ی شیر، برای اینکه توستِ کپی‌شدن نسبت به همین دکمه پوزیشن بگیره */
+.MenuWrapper {
+    position: relative;
+}
+
+/* توستِ کوچیکِ فیدبک بعد از کپی‌شدن لینک پست */
+.CopiedToast {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    right: 0;
+    background: #1d9bf0;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    animation: toastFadeIn 0.15s ease;
+}
+
+@keyframes toastFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .DislikeWrapper,
 .SharesWrapper,
 .SavesWrapper,

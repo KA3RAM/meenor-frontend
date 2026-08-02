@@ -30,3 +30,10 @@
     height: 20px;
 
 }
+
+.searchStatus {
+    text-align: center;
+    color: #71767b;
+    padding: 2rem 0;
+    font-size: 0.95rem;
+}

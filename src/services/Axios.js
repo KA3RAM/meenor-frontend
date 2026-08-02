@@ -299,7 +299,15 @@ export const get_poster_profile = (input) => {
     })
 }
 
-
+export const search_post = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/search_post/?search=${input}/`;
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
 
 
 

@@ -93,6 +93,7 @@ export default function Post() {
 
     const [activeStates, setActiveStates] = useState({ like: false, dislike: false, save: false })
     const [counts, setCounts] = useState({ like: 0, dislike: 0 })
+    const [copied, setCopied] = useState(false) // فیدبک بصری بعد از کپی لینک پست
 
     // نویسنده‌ی خودِ پست
     const author = useUserProfile(post?.user)
@@ -209,6 +210,18 @@ export default function Post() {
     const toggleLike = () => sendReaction("like")
     const toggleDislike = () => sendReaction("dislike")
     const toggleSave = () => setActiveStates((prev) => ({ ...prev, save: !prev.save }))
+
+    // مثل توییتر/یوتیوب: با یه کلیک، لینک همین پست مستقیم کپی می‌شه
+    const handleShareClick = async () => {
+        const postUrl = `${window.location.origin}/post/${post.id}`
+        try {
+            await navigator.clipboard.writeText(postUrl)
+            setCopied(true)
+            setTimeout(() => setCopied(false), 1500)
+        } catch (err) {
+            console.error("کپی نشد:", err)
+        }
+    }
 
     const handleComentChange = (e) => {
         const value = e.target.value.slice(0, MAX_COMENT_LENGTH)
@@ -333,9 +346,17 @@ export default function Post() {
                     </div>
 
                     <div className={styles.RightSide}>
-                        <button className={styles.SharesWrapper}>
-                            <ShareIcon />
-                        </button>
+                        <div className={styles.MenuWrapper}>
+                            <button
+                                className={styles.SharesWrapper}
+                                onClick={handleShareClick}
+                                aria-label="کپی لینک پست"
+                            >
+                                <ShareIcon />
+                            </button>
+
+                            {copied && <span className={styles.CopiedToast}>لینک کپی شد</span>}
+                        </div>
                     </div>
                 </div>
 
