@@ -49,6 +49,7 @@ export default function Router() {
                     <Route path="/likes" element={<Likes />} />
                     <Route path="/search" element={<Search />} />
                     <Route path="/bookmarks" element={<Saves />} />
+                    <Route path="/post/:id" element={<Post />} />
                 </Route>
 
             </Routes>

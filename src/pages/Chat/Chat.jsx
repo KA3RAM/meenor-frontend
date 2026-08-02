@@ -3,7 +3,12 @@ import styles from "./Chat.module.css";
 // اگر SVGها رو به صورت React Component ایمپورت کنی
 import { ReactComponent as SendIcon } from "../../assets/icons/chat/SendIcon.svg";
 import { ReactComponent as RefreshIcon } from "../../assets/icons/chat/RefreshIcon.svg";
-import { CHB_send_input_good } from "../../services/Axios";
+import { ReactComponent as StarIcon } from "../../assets/icons/Sidebar/Likes.svg";
+import {
+    CHB_send_input_good,
+    add_to_wishlist_chatBot,
+    check_if_wishlist_chatBot,
+} from "../../services/Axios";
 import {useNavigate} from "react-router-dom";
 
 /* --------------------------- product autocomplete ------------------------ */
@@ -200,6 +205,21 @@ function MultilineValue({ value }) {
 function ComparisonBlock({ productA, productB }) {
     // هوک‌ها همیشه باید اول و بدون شرط صدا زده بشن (قانون Rules of Hooks)
     const [animated, setAnimated] = useState(false);
+    // وضعیت ویشلیست هر کدوم از دو محصول (پر بودن ستاره یعنی قبلاً اضافه شده)
+    const [wishlistedA, setWishlistedA] = useState(false);
+    const [wishlistedB, setWishlistedB] = useState(false);
+
+    // کلیک روی ستاره: محصول رو به ویشلیست اضافه می‌کنه و اگه موفق بود، ستاره رو پر می‌کنه
+    async function handleAddToWishlist(product, side) {
+        if (!product?.id) return;
+        try {
+            await add_to_wishlist_chatBot(product.id);
+            if (side === "A") setWishlistedA(true);
+            else setWishlistedB(true);
+        } catch (err) {
+            console.error("افزودن به ویشلیست با خطا مواجه شد:", err);
+        }
+    }
 
     useEffect(() => {
         if (!productA || !productB) return;
@@ -213,6 +233,31 @@ function ComparisonBlock({ productA, productB }) {
         return () => cancelAnimationFrame(raf1);
     }, [productA, productB]);
 
+    // موقع لود شدن مقایسه، چک می‌کنیم هر کدوم از دو محصول قبلاً به ویشلیست
+    // اضافه شده یا نه، تا ستاره‌ی همون یکی از همون اول پر نمایش داده بشه.
+    useEffect(() => {
+        let cancelled = false;
+
+        async function checkWishlist(product, setWishlisted) {
+            if (!product?.id) return;
+            try {
+                const res = await check_if_wishlist_chatBot(product.id);
+                if (cancelled) return;
+                const isWishlisted = Boolean(res?.data?.exists);
+                setWishlisted(isWishlisted);
+            } catch (err) {
+                console.error("چک‌کردن وضعیت ویشلیست با خطا مواجه شد:", err);
+            }
+        }
+
+        if (productA?.id) checkWishlist(productA, setWishlistedA);
+        if (productB?.id) checkWishlist(productB, setWishlistedB);
+
+        return () => {
+            cancelled = true;
+        };
+    }, [productA, productB]);
+
     // early return باید بعد از همه‌ی هوک‌ها باشه
     if (!productA || !productB) return null;
 
@@ -224,24 +269,48 @@ function ComparisonBlock({ productA, productB }) {
         <div className={styles.comparisonWrapper}>
             <div className={styles.comparisonHeader}>
                 <div className={styles.comparisonHeaderSide}>
-                    {productA.image_link && (
-                        <img
-                            className={styles.comparisonProductImage}
-                            src={productA.image_link}
-                            alt={nameA}
-                        />
-                    )}
+                    <div className={styles.productImageWrap}>
+                        {productA.image_link && (
+                            <img
+                                className={styles.comparisonProductImage}
+                                src={productA.image_link}
+                                alt={nameA}
+                            />
+                        )}
+                        <button
+                            type="button"
+                            className={`${styles.wishlistButton} ${styles.wishlistButtonLeft} ${
+                                wishlistedA ? styles.wishlistButtonActive : ""
+                            }`}
+                            onClick={() => handleAddToWishlist(productA, "A")}
+                            aria-label="افزودن به ویشلیست"
+                        >
+                            <StarIcon />
+                        </button>
+                    </div>
                     <span className={styles.comparisonHeaderA}>{nameA}</span>
                 </div>
                 <div className={styles.comparisonVsDivider}>VS</div>
                 <div className={styles.comparisonHeaderSide}>
-                    {productB.image_link && (
-                        <img
-                            className={styles.comparisonProductImage}
-                            src={productB.image_link}
-                            alt={nameB}
-                        />
-                    )}
+                    <div className={styles.productImageWrap}>
+                        {productB.image_link && (
+                            <img
+                                className={styles.comparisonProductImage}
+                                src={productB.image_link}
+                                alt={nameB}
+                            />
+                        )}
+                        <button
+                            type="button"
+                            className={`${styles.wishlistButton} ${styles.wishlistButtonRight} ${
+                                wishlistedB ? styles.wishlistButtonActive : ""
+                            }`}
+                            onClick={() => handleAddToWishlist(productB, "B")}
+                            aria-label="افزودن به ویشلیست"
+                        >
+                            <StarIcon />
+                        </button>
+                    </div>
                     <span className={styles.comparisonHeaderB}>{nameB}</span>
                 </div>
             </div>

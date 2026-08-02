@@ -9,6 +9,13 @@
     box-sizing: border-box;
 }
 
+.stateText {
+    text-align: center;
+    color: #71767b;
+    padding: 2rem 0;
+    font-size: 0.95rem;
+}
+
 .UserPost {
     border: 1px solid rgba(255, 255, 255, 0.162);
     height: auto;

@@ -72,6 +72,25 @@ export const add_to_wishlist_chatBot = (input) => {
 
 
 }
+// export const delete_wishlist_chatBot = (input) => {
+//     const token = localStorage.getItem("token");
+//     const url = `http://127.0.0.1:8000/chatbot/wishlist_phone/${input}/`
+//     return axios.delete(url,{
+//         headers: {
+//             "authorization": `Token ${token}`,
+//         }
+//     })
+// }
+
+export const check_if_wishlist_chatBot = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/chatbot/is_wishlisted/${input}/`
+    return axios.get(url,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
 export const get_all_wishlist_phone = () => {
     const token = localStorage.getItem("token");
     const url = `http://127.0.0.1:8000/chatbot/wishlisted_phone/`
@@ -135,10 +154,15 @@ export const get_user_profile = () => {
     });
 }
 
-export const edit_user_profile = (input_edit_data) => {
+export const edit_user_profile = (f_name,l_name,username,image) => {
     const token = localStorage.getItem("token");
     const url = `http://127.0.0.1:8000/account/update/`;
-    return axios.put(url, input_edit_data ,{
+    const formData = new FormData();
+    formData.append("first_name", f_name);
+    formData.append("last_name", l_name);
+    formData.append("username", username);
+    if (image) formData.append("profile_pic", image);
+    return axios.put(url, formData ,{
         headers: {
             "authorization": `Token ${token}`,
         }
@@ -158,13 +182,12 @@ export const edit_user_profile_password = (input_edit_data) => {
 
 // نقدنگار
 
-export const creat_post = (phone, image, title, content) => {
+export const creat_post = (phone, image, content) => {
     const token = localStorage.getItem("token");
-    const url = ` http://127.0.0.1:8000/naghdnegar/create_post/ `;
+    const url = `http://127.0.0.1:8000/naghdnegar/create_post/`;
     const formData = new FormData();
     formData.append("phone", phone);
-    formData.append("image", image);
-    formData.append("title", "nothing to say");
+    if (image) formData.append("image", image);
     formData.append("content", content);
     return  axios.post(url, formData, {
         headers: {
@@ -194,11 +217,14 @@ export const get_post = (input) => {
     })
 }
 
-export const reaction_change_post = (input) => {
+// قبلاً این تابع فقط یه پارامتر (input) می‌گرفت و همونو هم به‌عنوان id پست توی URL،
+// هم به‌عنوان مقدار reaction توی بادی می‌فرستاد — که کاملاً اشتباه بود. الان دو تا
+// پارامتر جدا می‌گیره: آیدی پست، و مقدار واکنش ("like" یا "dislike").
+export const reaction_change_post = (postId, reaction) => {
     const token = localStorage.getItem("token");
-    const url = `http://127.0.0.1:8000/naghdnegar/react_post/${input}/`;
+    const url = `http://127.0.0.1:8000/naghdnegar/react_post/${postId}/`;
     const data = {
-        "reaction" : input
+        "reaction" : reaction
     }
     return axios.post(url, data ,{
         headers: {
@@ -219,8 +245,59 @@ export const filter_post = (input) => {
 }
 
 
+export const get_short_phone = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/get_short_phone/${input}/`
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
+export const user_profile = () => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/account/user_profile/`;
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
+export const get_comment = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/get_comments/${input}/`
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
 
 
+export const set_comment = (postId, input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/comment/${postId}/`;
+    return axios.post(url,input, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
+// پروفایل عمومیِ یه کاربر دلخواه (نه فقط خودِ کاربر لاگین‌شده) — برای نشون‌دادن
+// اسم/عکس نویسنده‌ی هر پست یا کامنت، با آیدی همون کاربر (فیلد "user" که توی
+// جواب get_post/get_comments برمی‌گرده).
+export const get_poster_profile = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/get_profile/${input}/`
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
 
 
 

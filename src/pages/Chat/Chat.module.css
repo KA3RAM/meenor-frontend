@@ -371,6 +371,62 @@
     flex-shrink: 0;
 }
 
+/* ---------------------------- wishlist button ---------------------------- */
+
+.productImageWrap {
+    position: relative;
+    display: inline-flex;
+}
+
+.wishlistButton {
+    position: absolute;
+    top: -8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #16181c;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    color: #71767b;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.wishlistButton svg {
+    width: 15px;
+    height: 15px;
+}
+
+.wishlistButton:hover {
+    color: #f4b400;
+    border-color: #f4b400;
+}
+
+.wishlistButton:active {
+    transform: scale(0.9);
+}
+
+/* ستاره‌ی پر رنگ: یعنی محصول قبلاً به ویشلیست اضافه شده */
+.wishlistButtonActive {
+    color: #f4b400;
+    border-color: #f4b400;
+}
+
+.wishlistButtonActive svg path {
+    fill: currentColor;
+}
+
+.wishlistButtonLeft {
+    left: -8px;
+}
+
+.wishlistButtonRight {
+    right: -8px;
+}
+
 .comparisonVsDivider {
     flex-shrink: 0;
     font-size: 12px;

@@ -1,8 +1,8 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import styles from "./Post.module.css"
 import Art from "../../assets/images/Arthur.jpg"
-import lock from "../../assets/images/lock.jpeg"
-import sample1 from "../../assets/images/mobile_samples/sample2.jpeg"
+// import lock from "../../assets/images/lock.jpeg"
 
 /* ---------------------------------- SVG COMPONENTS --------------------------------- */
 import { ReactComponent as CommentsIcon } from "../../assets/icons/PostImages/Coments.svg"
@@ -13,41 +13,202 @@ import { ReactComponent as ShareIcon } from "../../assets/icons/PostImages/Share
 import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.svg"
 import { ReactComponent as DislikeIcon } from "../../assets/icons/PostImages/dislike.svg"
 
+import {
+    get_post,
+    get_comment,
+    set_comment,
+    reaction_change_post,
+    user_profile, get_poster_profile,
+} from "../../services/Axios"
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl"
+import { useUserProfile } from "../../utils/useUserProfile"
+
+const MAX_TEXTAREA_HEIGHT = 200 // بعد از این ارتفاع (به px)، خود باکس اسکرول می‌خوره
+const MAX_COMENT_LENGTH = 500 // حداکثر تعداد کاراکتر مجاز برای کامنت
+
+// تاریخ+ساعت دقیق کامنت رو خوانا نشون می‌ده (نه فقط تاریخ، چون بک‌اند ساعت دقیق می‌فرسته)
+function formatDateTime(iso) {
+    if (!iso) return ""
+    try {
+        return new Date(iso).toLocaleString("fa-IR", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        })
+    } catch {
+        return ""
+    }
+}
+
+/* ------------------------------------------------------------------------------ */
+/*  CommentItem — هر کامنت پروفایل نویسنده‌ی خودش رو جدا می‌گیره (چون کامنت‌های یه
+    پست می‌تونن از کاربرهای مختلف باشن)، با همون هوک مشترکِ کش‌دارِ useUserProfile. */
+/* ------------------------------------------------------------------------------ */
+function CommentItem({ comment }) {
+    const author = useUserProfile(comment.user)
+    const displayName = author
+        ? [author.first_name, author.last_name].filter(Boolean).join(" ") ||
+          author.username ||
+          `کاربر #${comment.user}`
+        : `کاربر #${comment.user}`
+    const handle = author?.username ? `@${author.username}` : ""
+    const avatarSrc = author?.profile_pic ? resolveMediaUrl(author.profile_pic) : Art
+
+    return (
+        <>
+            <div className={styles.ComentsPeopleWrapper}>
+                <div className={styles.HeaderInfo}>
+                    <img className={styles.pictureProfile} src={avatarSrc} alt="" />
+                    <p className={styles.Name}>{displayName}</p>
+                    {handle && <p className={styles.Handle}>{handle}</p>}
+                    <span className={styles.Dot}>·</span>
+                    <p className={styles.Date}>{formatDateTime(comment.created_at)}</p>
+                </div>
+                <p className={styles.PeopleComentContent}>{comment.content}</p>
+            </div>
+            <hr className={styles.HrComent} />
+        </>
+    )
+}
+
 export default function Post() {
+    const { id } = useParams()
+    const navigate = useNavigate()
+
+    const [post, setPost] = useState(null)
+    const [loadingPost, setLoadingPost] = useState(true)
+    const [postError, setPostError] = useState(false)
+    const [posterData,setPosterData] = useState([])
+
+    const [comments, setComments] = useState([])
+    const [loadingComments, setLoadingComments] = useState(true)
+
+    const [currentUser, setCurrentUser] = useState(null) // برای عکس پروفایل کنار باکس نوشتن کامنت
+
     const [comentText, setComentText] = useState("")
+    const [submittingComment, setSubmittingComment] = useState(false)
     const textareaRef = useRef(null)
 
-    const MAX_TEXTAREA_HEIGHT = 200 // بعد از این ارتفاع (به px)، خود باکس اسکرول می‌خوره
-    const MAX_COMENT_LENGTH = 500 // حداکثر تعداد کاراکتر مجاز برای کامنت
+    const [activeStates, setActiveStates] = useState({ like: false, dislike: false, save: false })
+    const [counts, setCounts] = useState({ like: 0, dislike: 0 })
 
-    const [activeStates, setActiveStates] = useState({
-        like: false,
-        dislike: false,
-        save: false,
-    });
+    // نویسنده‌ی خودِ پست
+    const author = useUserProfile(post?.user)
+    const authorName = author
+        ? [author.first_name, author.last_name].filter(Boolean).join(" ") ||
+          author.username ||
+          (post ? `کاربر #${post.user}` : "")
+        : post
+        ? `کاربر #${post.user}`
+        : ""
+    const authorHandle = author?.username ? `@${author.username}` : ""
+    const authorAvatar = author?.profile_pic ? resolveMediaUrl(author.profile_pic) : Art
 
-    const toggleLike = () => {
-        setActiveStates(prev => ({
+
+    const fetch_get_poster_data = async () => {
+        try {
+            let {data:data} = await get_poster_profile(post?.user)
+            setPosterData(data)
+            console.log(data + " " + "lir")
+        }
+        catch (err) {
+            console.log(err)
+        }
+
+    }
+
+    /* گرفتن اطلاعات پست */
+    useEffect(() => {
+        let cancelled = false
+        setLoadingPost(true)
+        setPostError(false)
+        get_post(id)
+            .then(({ data }) => {
+                if (cancelled) return
+                setPost(data)
+                setActiveStates({
+                    like: data.user_reaction === "like",
+                    dislike: data.user_reaction === "dislike",
+                    save: false,
+                })
+                setCounts({ like: data.like_count ?? 0, dislike: data.dislike_count ?? 0 })
+            })
+            .catch((err) => {
+                console.error("خطا در گرفتن پست:", err)
+                if (!cancelled) setPostError(true)
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingPost(false)
+            })
+        return () => {
+            cancelled = true
+        }
+    }, [id])
+
+    /* گرفتن کامنت‌های پست */
+    useEffect(() => {
+        let cancelled = false
+        setLoadingComments(true)
+        get_comment(id)
+            .then(({ data }) => {
+                if (!cancelled) setComments(data ?? [])
+                fetch_get_poster_data()
+            })
+            .catch((err) => {
+                console.error("خطا در گرفتن کامنت‌ها:", err)
+                if (!cancelled) setComments([])
+            })
+            .finally(() => {
+                if (!cancelled) setLoadingComments(false)
+            })
+        return () => {
+            cancelled = true
+        }
+    }, [id])
+
+    /* عکس پروفایل خودِ کاربر لاگین‌شده، برای کنار باکس نوشتن کامنت */
+    useEffect(() => {
+        const fetch_get_users_profile = async () => {
+            let {data:data} = await user_profile()
+            setCurrentUser(data)
+
+        }
+        fetch_get_users_profile()
+    }, [])
+
+    /* هم برای لایک هم دیسلایک — بک‌اند خودش toggle می‌کنه (همون منطق نقدنگار) */
+    const sendReaction = async (kind) => {
+        const wasActive = activeStates[kind]
+        const opposite = kind === "like" ? "dislike" : "like"
+        const wasOppositeActive = activeStates[opposite]
+
+        setActiveStates((prev) => ({ ...prev, [kind]: !wasActive, [opposite]: false }))
+        setCounts((prev) => ({
             ...prev,
-            like: !prev.like,
-            dislike: false, // اگه لایک بزنه دیسلایک خاموش بشه
-        }));
-    };
+            [kind]: prev[kind] + (wasActive ? -1 : 1),
+            [opposite]: wasOppositeActive ? prev[opposite] - 1 : prev[opposite],
+        }))
 
-    const toggleDislike = () => {
-        setActiveStates(prev => ({
-            ...prev,
-            dislike: !prev.dislike,
-            like: false, // اگه دیسلایک بزنه لایک خاموش بشه
-        }));
-    };
+        try {
+            const { data } = await reaction_change_post(post.id, kind)
+            setCounts({ like: data.like_count, dislike: data.dislike_count })
+            setActiveStates((prev) => ({
+                ...prev,
+                like: data.reaction === "like",
+                dislike: data.reaction === "dislike",
+            }))
+        } catch (err) {
+            console.error("خطا در ثبت واکنش:", err)
+            setActiveStates((prev) => ({ ...prev, [kind]: wasActive, [opposite]: wasOppositeActive }))
+            setCounts({ like: post.like_count ?? 0, dislike: post.dislike_count ?? 0 })
+        }
+    }
 
-    const toggleSave = () => {
-        setActiveStates(prev => ({
-            ...prev,
-            save: !prev.save,
-        }));
-    };
+    const toggleLike = () => sendReaction("like")
+    const toggleDislike = () => sendReaction("dislike")
+    const toggleSave = () => setActiveStates((prev) => ({ ...prev, save: !prev.save }))
 
     const handleComentChange = (e) => {
         const value = e.target.value.slice(0, MAX_COMENT_LENGTH)
@@ -56,24 +217,56 @@ export default function Post() {
         const el = textareaRef.current
         if (!el) return
 
-        // ریست ارتفاع تا اسکرول‌هایت درست محاسبه شه
         el.style.height = "auto"
-
         if (el.scrollHeight > MAX_TEXTAREA_HEIGHT) {
-            // از حد مشخص که رد شد، ارتفاع ثابت می‌مونه و خود باکس اسکرول‌بار می‌گیره
             el.style.height = MAX_TEXTAREA_HEIGHT + "px"
             el.style.overflowY = "auto"
-            // اسکرول به آخرین خطی که کاربر داره تایپ می‌کنه (پایین باکس)
             el.scrollTop = el.scrollHeight
         } else {
-            // تا قبل از حد مشخص، باکس بزرگ می‌شه و اسکرول لازم نیست
             el.style.height = el.scrollHeight + "px"
             el.style.overflowY = "hidden"
         }
-
-        // اسکرول خودکار صفحه به سمت باکس کامنت وقتی داره بزرگ می‌شه
         el.scrollIntoView({ behavior: "smooth", block: "center" })
     }
+
+    const handleSendComment = async () => {
+        const content = comentText.trim()
+        if (!content || submittingComment) return
+        setSubmittingComment(true)
+        try {
+            const { data } = await set_comment(post.id, { content })
+            // کامنت تازه رو بالای لیست اضافه می‌کنیم، بدون نیاز به رفرش کل لیست
+            setComments((prev) => [data, ...prev])
+            setPost((prev) => (prev ? { ...prev, comment_count: (prev.comment_count ?? 0) + 1 } : prev))
+            setComentText("")
+            if (textareaRef.current) {
+                textareaRef.current.style.height = "auto"
+            }
+        } catch (err) {
+            console.error("خطا در ارسال کامنت:", err)
+        } finally {
+            setSubmittingComment(false)
+        }
+    }
+
+    if (loadingPost) {
+        return (
+            <div className={styles.wrapper}>
+                <p className={styles.stateText}>در حال بارگذاری پست...</p>
+            </div>
+        )
+    }
+
+    if (postError || !post) {
+        return (
+            <div className={styles.wrapper}>
+                <p className={styles.stateText}>این پست پیدا نشد.</p>
+            </div>
+        )
+    }
+
+    const postImageUrl = resolveMediaUrl(post.image)
+    const currentUserAvatar = resolveMediaUrl(currentUser?.profile_pic)
 
     return (
         <div className={styles.wrapper}>
@@ -82,11 +275,9 @@ export default function Post() {
 
                 <div className={styles.PostHeader}>
                     <div className={styles.HeaderInfo}>
-                        <img className={styles.pictureProfile} src={Art} alt="" />
-                        <p className={styles.Name}>Arthur MacWaters</p>
-                        <p className={styles.Handle}>@ArthurMacwaters</p>
-                        <span className={styles.Dot}>·</span>
-                        <p className={styles.Date}>Jul 28</p>
+                        <img className={styles.pictureProfile} src={authorAvatar} alt="" />
+                        <p className={styles.Name}>{authorName}</p>
+                        {authorHandle && <p className={styles.Handle}>{authorHandle}</p>}
                     </div>
 
                     <button className={styles.ThreeDots}>
@@ -95,12 +286,14 @@ export default function Post() {
                 </div>
 
                 <div className={styles.PostContentWrapper}>
-                    <p>I met with the team of the Lockheed Martin defense company – one of the strongest enterprises in the United States, with which we have been cooperating for a long time. Lockheed Martin is the company that produces ATACMS, HIMARS, F-16s, and missiles for Patriot systems.</p>
+                    <p>{post.content}</p>
                 </div>
 
-                <div className={styles.PostImgWrapper}>
-                    <img className={styles.PostImg} src={sample1} alt="" />
-                </div>
+                {postImageUrl && (
+                    <div className={styles.PostImgWrapper}>
+                        <img className={styles.PostImg} src={postImageUrl} alt="" />
+                    </div>
+                )}
 
                 <div className={styles.PostStats}>
                     <div className={styles.LeftSide}>
@@ -110,7 +303,6 @@ export default function Post() {
                             onClick={toggleSave}
                         >
                             <SavesIcon />
-                            <p>571</p>
                         </button>
 
                         <button
@@ -118,7 +310,7 @@ export default function Post() {
                             onClick={toggleLike}
                         >
                             <LikeIcon />
-                            <p>4.7K</p>
+                            <p>{counts.like}</p>
                         </button>
 
                         <button
@@ -126,19 +318,18 @@ export default function Post() {
                             onClick={toggleDislike}
                         >
                             <DislikeIcon />
-                            <p>4.7K</p>
+                            <p>{counts.dislike}</p>
                         </button>
 
                         <button className={styles.ComentsWrapper}>
                             <CommentsIcon />
-                            <p>307</p>
+                            <p>{post.comment_count ?? 0}</p>
                         </button>
 
                         <button className={styles.ViewsWrapper}>
                             <ViewsIcon />
-                            <p>417K</p>
                         </button>
-                        
+
                     </div>
 
                     <div className={styles.RightSide}>
@@ -153,7 +344,7 @@ export default function Post() {
                     <h3 className={styles.h3}>نظرات</h3>
                     <hr className={styles.hr} />
                     <div className={styles.UserComentWrapper}>
-                        <img className={styles.UserProfilePic} src={lock} alt="" />
+                        <img className={styles.UserProfilePic} src={currentUserAvatar} alt="" />
                         <div className={styles.ComentInputBox}>
                             <textarea
                                 ref={textareaRef}
@@ -172,67 +363,26 @@ export default function Post() {
                                 {comentText.length}/{MAX_COMENT_LENGTH}
                             </span>
                         </div>
-                        <button className={styles.SendComent}>پاسخ</button>
+                        <button
+                            className={styles.SendComent}
+                            disabled={!comentText.trim() || submittingComment}
+                            onClick={handleSendComment}
+                        >
+                            {submittingComment ? "..." : "پاسخ"}
+                        </button>
                     </div>
                     <hr className={styles.hr} />
 
+                    {loadingComments && <p className={styles.stateText}>در حال بارگذاری نظرات...</p>}
+                    {!loadingComments && comments.length === 0 && (
+                        <p className={styles.stateText}>هنوز نظری ثبت نشده.</p>
+                    )}
 
+                    {comments.map((comment) => (
+                        <CommentItem key={comment.id} comment={comment} />
+                    ))}
 
-                    <div className={styles.ComentsPeopleWrapper}>
-                        <div className={styles.HeaderInfo}>
-                            <img className={styles.pictureProfile} src={Art} alt="" />
-                            <p className={styles.Name}>Arthur MacWaters</p>
-                            <p className={styles.Handle}>@ArthurMacwaters</p>
-                            <span className={styles.Dot}>·</span>
-                            <p className={styles.Date}>Jul 28</p>
-                        </div>
-                        <p className={styles.PeopleComentContent}>سلام این کامنت برای تست است</p>
-                    </div>
-                    <hr className={styles.HrComent} />
-
-                    <div className={styles.ComentsPeopleWrapper}>
-                        <div className={styles.HeaderInfo}>
-                            <img className={styles.pictureProfile} src={Art} alt="" />
-                            <p className={styles.Name}>Arthur MacWaters</p>
-                            <p className={styles.Handle}>@ArthurMacwaters</p>
-                            <span className={styles.Dot}>·</span>
-                            <p className={styles.Date}>Jul 28</p>
-                        </div>
-                        <p className={styles.PeopleComentContent}> لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی ایجاد کرد. در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها و شرایط سخت تایپ به پایان رسد وزمان مورد نیاز شامل حروفچینی دستاوردهای اصلی و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.</p>
-                    </div>
-                    <hr className={styles.HrComent} />
-
-                    <div className={styles.ComentsPeopleWrapper}>
-                        <div className={styles.HeaderInfo}>
-                            <img className={styles.pictureProfile} src={Art} alt="" />
-                            <p className={styles.Name}>Arthur MacWaters</p>
-                            <p className={styles.Handle}>@ArthurMacwaters</p>
-                            <span className={styles.Dot}>·</span>
-                            <p className={styles.Date}>Jul 28</p>
-                        </div>
-                        <p className={styles.PeopleComentContent}>     ظرفیت نرم‌افزار وحدت بادی فارسی کارآفرینی تحقق ساختگی سادگی مشاوره بازخورد متنوع! ابداع بازاریابی داروسازی معماری تناسب متاورس طبیعت کاربردهای. محتوا دیجیتال دستاوردهای مستمر انتشار تحلیلی دنیا منطق آزادی دشواری جهانی داده نقادانه استفاده. ترکیبی کارایی گیرنده حقیقت متخصصان ابداع علم ارزش. توزیع فضا شناخت متنوع رهبری انتخاب ارزیابی گرافیک تجدد نامفهوم ساختگی ایجاد تجدد توسعه؟</p>
-                    </div>
-                    <hr className={styles.HrComent} />
-
-                    <div className={styles.ComentsPeopleWrapper}>
-                        <div className={styles.HeaderInfo}>
-                            <img className={styles.pictureProfile} src={Art} alt="" />
-                            <p className={styles.Name}>Arthur MacWaters</p>
-                            <p className={styles.Handle}>@ArthurMacwaters</p>
-                            <span className={styles.Dot}>·</span>
-                            <p className={styles.Date}>Jul 28</p>
-                        </div>
-                        <p className={styles.PeopleComentContent}>سلام این کامنت برای تست است</p>
-                    </div>
-                    <hr className={styles.HrComent} />
-
-
-                    <div>
-
-                    </div>
                 </div>
-
-
 
             </div>
 

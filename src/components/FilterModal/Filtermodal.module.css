@@ -218,8 +218,19 @@
     font-weight: 700;
 }
 
-.applyBtn:hover {
+.applyBtn:hover:not(:disabled) {
     opacity: 0.9;
+}
+
+.applyBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.selectHint {
+    margin: 0.5rem 0 0;
+    font-size: 0.8rem;
+    color: #f4b400;
 }
 
 /* ------------------------- Animations ------------------------- */

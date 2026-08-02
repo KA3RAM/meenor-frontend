@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./Naghdnegar.module.css"
 import Art from "../../assets/images/Arthur.jpg"
-import sample1 from "../../assets/images/mobile_samples/sample2.jpeg"
 
 /* ---------------------------------- SVG COMPONENTS --------------------------------- */
 import { ReactComponent as CommentsIcon } from "../../assets/icons/PostImages/Coments.svg"
@@ -17,18 +16,46 @@ import { ReactComponent as FilterIcon } from "../../assets/icons/PostImages/Filt
 
 import { useNavigate } from "react-router-dom";
 import FilterModal from "../../components/FilterModal/FilterModal";
+import { feed_post, filter_post, reaction_change_post } from "../../services/Axios";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
+import { useUserProfile } from "../../utils/useUserProfile";
 
-export default function Naghdnegar() {
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
+/* ------------------------------------------------------------------------------ */
+/*  PostCard — یه پست تکی. قبلاً همه‌ی این منطق مستقیم داخل Naghdnegar بود و برای یه
+    پست هاردکد شده کار می‌کرد؛ حالا که چند تا پست داریم، جداش کردم تا هر پست state
+    مستقل خودش (منوی بازشده، وضعیت لایک/دیسلایک و ...) رو داشته باشه.
+
+    نکته‌ی مهم: طبق مستندات API (naghdnegar.xlsx)، خودِ آبجکتی که از feed/ یا
+    filter_post/ برمی‌گرده از قبل شامل user_reaction و like_count/dislike_count/
+    comment_count هست — پس نیازی به یه ریکوئست جداگانه‌ی get_post برای هر پست
+    نیست؛ همون دیتای اولیه‌ی feed کافیه.                                          */
+/* ------------------------------------------------------------------------------ */
+function PostCard({ post }) {
     const navigate = useNavigate();
 
     const [activeStates, setActiveStates] = useState({
-        like: false,
-        dislike: false,
-        save: false,
+        like: post.user_reaction === "like",
+        dislike: post.user_reaction === "dislike",
+        save: false, // برای save هیچ endpoint ای توی مستندات فعلی نبود، فعلاً فقط ظاهریه
     });
 
-    // ---------- منوهای تولتیپ ----------
+    const [counts, setCounts] = useState({
+        like: post.like_count ?? 0,
+        dislike: post.dislike_count ?? 0,
+    });
+
+    // پروفایل نویسنده‌ی پست (اسم، username، عکس) — با کش مشترک، پس اگه چند پست
+    // از یه نویسنده باشه، فقط یه‌بار ریکوئستش زده می‌شه.
+    const author = useUserProfile(post.user);
+    const displayName = author
+        ? [author.first_name, author.last_name].filter(Boolean).join(" ") ||
+          author.username ||
+          `کاربر #${post.user}`
+        : `کاربر #${post.user}`;
+    const avatarSrc = author?.profile_pic ? resolveMediaUrl(author.profile_pic) : Art;
+
+    const postImageUrl = resolveMediaUrl(post.image);
+
     const [openMenu, setOpenMenu] = useState(null); // null | "dots" | "share"
     const [copied, setCopied] = useState(false);
 
@@ -59,7 +86,7 @@ export default function Naghdnegar() {
     };
 
     const handleCopyLink = async () => {
-        const postUrl = `${window.location.origin}/post/${1}`; // آیدی واقعی پست رو جایگزین کن
+        const postUrl = `${window.location.origin}/post/${post.id}`;
         try {
             await navigator.clipboard.writeText(postUrl);
             setCopied(true);
@@ -70,32 +97,205 @@ export default function Naghdnegar() {
         setOpenMenu(null);
     };
 
-    const toggleLike = () => {
-        setActiveStates(prev => ({
+    // هم برای لایک هم دیسلایک استفاده می‌شه؛ طبق مستندات API، بک‌اند خودش «toggle»
+    // می‌کنه — یعنی اگه همون واکنش رو دوباره بفرستی، حذفش می‌کنه (نه اینکه ما
+    // بخوایم null بفرستیم). ما فقط همیشه kind رو می‌فرستیم.
+    const sendReaction = async (kind) => {
+        const wasActive = activeStates[kind];
+        const opposite = kind === "like" ? "dislike" : "like";
+        const wasOppositeActive = activeStates[opposite];
+
+        // آپدیت خوش‌بینانه‌ی UI قبل از جواب سرور
+        setActiveStates((prev) => ({ ...prev, [kind]: !wasActive, [opposite]: false }));
+        setCounts((prev) => ({
             ...prev,
-            like: !prev.like,
-            dislike: false,
+            [kind]: prev[kind] + (wasActive ? -1 : 1),
+            [opposite]: wasOppositeActive ? prev[opposite] - 1 : prev[opposite],
         }));
+
+        try {
+            const { data } = await reaction_change_post(post.id, kind);
+            // شمارش‌ها رو با جواب واقعی سرور دقیق می‌کنیم (منبع درستِ عددها همونجاست)
+            setCounts({ like: data.like_count, dislike: data.dislike_count });
+            setActiveStates((prev) => ({
+                ...prev,
+                like: data.reaction === "like",
+                dislike: data.reaction === "dislike",
+            }));
+        } catch (err) {
+            console.error("خطا در ثبت واکنش:", err);
+            // در صورت خطا، وضعیت قبل از کلیک رو برگردون
+            setActiveStates((prev) => ({ ...prev, [kind]: wasActive, [opposite]: wasOppositeActive }));
+            setCounts({ like: post.like_count ?? 0, dislike: post.dislike_count ?? 0 });
+        }
     };
 
-    const toggleDislike = () => {
-        setActiveStates(prev => ({
-            ...prev,
-            dislike: !prev.dislike,
-            like: false,
-        }));
-    };
+    const toggleLike = () => sendReaction("like");
+    const toggleDislike = () => sendReaction("dislike");
 
     const toggleSave = () => {
-        setActiveStates(prev => ({
-            ...prev,
-            save: !prev.save,
-        }));
+        setActiveStates(prev => ({ ...prev, save: !prev.save }));
     };
 
-    if (!localStorage.getItem("token")) {
-        navigate("/register");
-    }
+    return (
+        <div className={styles.UserPost} onClick={() => navigate(`/post/${post.id}`)}>
+            <div className={styles.PostHeader}>
+                <div className={styles.HeaderInfo}>
+                    <img className={styles.pictureProfile} src={avatarSrc} alt="" />
+                    <p className={styles.Name}>{displayName}</p>
+                </div>
+
+                {/* -------- دکمه سه‌نقطه + منو -------- */}
+                {/* stopPropagation چون این دکمه داخل کارتیه که خودش با کلیک به صفحه‌ی پست می‌ره */}
+                <div className={styles.MenuWrapper} ref={dotsRef} onClick={(e) => e.stopPropagation()}>
+                    <button
+                        className={styles.ThreeDots}
+                        onClick={() => toggleMenu("dots")}
+                    >
+                        <ThreeDotsIcon />
+                    </button>
+
+                    {openMenu === "dots" && (
+                        <div className={styles.TooltipMenu}>
+                            <button className={styles.TooltipItem} onClick={handleReport}>
+                                {/* <ReportIcon className={styles.TooltipIcon} /> */}
+                                <span>گزارش پست</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            <div className={styles.PostContentWrapper}>
+                <p>{post.content}</p>
+            </div>
+
+            {postImageUrl && (
+                <div className={styles.PostImgWrapper}>
+                    <img className={styles.PostImg} src={postImageUrl} alt="" />
+                </div>
+            )}
+
+            {/* stopPropagation روی کل ردیف، تا کلیک روی لایک/دیسلایک/سیو/کامنت/شیر باعث نره صفحه‌ی پست نشه */}
+            <div className={styles.PostStats} onClick={(e) => e.stopPropagation()}>
+                <div className={styles.LeftSide}>
+                    <button
+                        className={`${styles.SavesWrapper} ${activeStates.save ? styles.Active : ""}`}
+                        onClick={toggleSave}
+                    >
+                        <SavesIcon />
+                    </button>
+
+                    <button
+                        className={`${styles.LikesWrapper} ${activeStates.like ? styles.Active : ""}`}
+                        onClick={toggleLike}
+                    >
+                        <LikeIcon />
+                        <p>{counts.like}</p>
+                    </button>
+
+                    <button
+                        className={`${styles.DislikeWrapper} ${activeStates.dislike ? styles.Active : ""}`}
+                        onClick={toggleDislike}
+                    >
+                        <DislikeIcon />
+                        <p>{counts.dislike}</p>
+                    </button>
+
+                    <button
+                        className={styles.ComentsWrapper}
+                        onClick={() => navigate(`/post/${post.id}`)}
+                    >
+                        <CommentsIcon />
+                        <p>{post.comment_count ?? 0}</p>
+                    </button>
+
+                    <button className={styles.ViewsWrapper}>
+                        <ViewsIcon />
+                    </button>
+                </div>
+
+                <div className={styles.RightSide}>
+                    {/* -------- دکمه شیر + منو -------- */}
+                    <div className={styles.MenuWrapper} ref={shareRef}>
+                        <button
+                            className={styles.SharesWrapper}
+                            onClick={() => toggleMenu("share")}
+                        >
+                            <ShareIcon />
+                        </button>
+
+                        {openMenu === "share" && (
+                            <div className={`${styles.TooltipMenu} ${styles.TooltipMenuLeft}`}>
+                                <button className={styles.TooltipItem} onClick={handleCopyLink}>
+                                    {/* <CopyIcon className={styles.TooltipIcon} /> */}
+                                    <span>{copied ? "کپی شد!" : "کپی کردن لینک"}</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ------------------------------------------------------------------------------ */
+
+export default function Naghdnegar() {
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const [posts, setPosts] = useState([]);
+    const [loadingFeed, setLoadingFeed] = useState(true);
+    // محصولی که فیلترِ فعلی روش اعمال شده؛ اگه null باشه یعنی داریم فید عمومی رو می‌بینیم
+    const [activeFilterProduct, setActiveFilterProduct] = useState(null);
+
+    // چک لاگین بودن باید داخل useEffect باشه، نه مستقیم توی بدنه‌ی رندر —
+    // وگرنه هر بار این کامپوننت رندر بشه، navigate() هم دوباره صدا زده می‌شه.
+    useEffect(() => {
+        if (!localStorage.getItem("token")) {
+            navigate("/register");
+        }
+    }, [navigate]);
+
+    const loadFeed = async () => {
+        setLoadingFeed(true);
+        try {
+            const { data } = await feed_post();
+            setPosts(data ?? []);
+            setActiveFilterProduct(null);
+        } catch (err) {
+            console.error("خطا در گرفتن فید:", err);
+            setPosts([]);
+        } finally {
+            setLoadingFeed(false);
+        }
+    };
+
+    // بار اول که صفحه باز می‌شه، پست‌های فید عمومی رو می‌گیریم
+    useEffect(() => {
+        loadFeed();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // وقتی کاربر توی مودال فیلتر یه محصول رو انتخاب و روی «اعمال فیلتر» کلیک کرد
+    const handleApplyFilter = async (product) => {
+        if (!product) return;
+        setIsFilterOpen(false);
+        setLoadingFeed(true);
+        try {
+            const { data } = await filter_post(product.id);
+            // پست‌های قبلی (چه فید عمومی چه فیلتر قبلی) کاملاً با نتیجه‌ی تازه جایگزین می‌شن —
+            // یعنی هر بار فیلتر جدیدی اعمال بشه، از صفر شروع می‌شه، نه اضافه‌شدن به قبلی‌ها.
+            setPosts(data ?? []);
+            setActiveFilterProduct(product);
+        } catch (err) {
+            console.error("خطا در فیلتر پست‌ها:", err);
+            setPosts([]);
+        } finally {
+            setLoadingFeed(false);
+        }
+    };
 
     return (
         <div className={styles.wrapper}>
@@ -105,114 +305,27 @@ export default function Naghdnegar() {
                     <p className={styles.filterp}>فیلتر</p>
                 </button>
 
+                {activeFilterProduct && (
+                    <button className={styles.filterBTN} onClick={loadFeed}>
+                        <p className={styles.filterp}>حذف فیلتر</p>
+                    </button>
+                )}
+
                 <FilterModal
                     isOpen={isFilterOpen}
                     onClose={() => setIsFilterOpen(false)}
-                    products={[
-                        { id: 1, name: "محصول نمونه", price: "۱۲۰,۰۰۰ تومان", image: sample1 },
-                    ]}
-                    onSelectProduct={(p) => console.log("انتخاب شد:", p)}
-                    onApply={(term) => console.log("جستجوی نهایی:", term)}
+                    onApply={handleApplyFilter}
                 />
             </div>
 
-            <div className={styles.UserPost}>
-                <div className={styles.PostHeader}>
-                    <div className={styles.HeaderInfo}>
-                        <img className={styles.pictureProfile} src={Art} alt="" />
-                        <p className={styles.Name}>Arthur MacWaters</p>
-                        <p className={styles.Handle}>@ArthurMacwaters</p>
-                        <span className={styles.Dot}>·</span>
-                        <p className={styles.Date}>Jul 28</p>
-                    </div>
+            {loadingFeed && <p className={styles.feedStatus}>در حال بارگذاری پست‌ها...</p>}
+            {!loadingFeed && posts.length === 0 && (
+                <p className={styles.feedStatus}>پستی پیدا نشد.</p>
+            )}
 
-                    {/* -------- دکمه سه‌نقطه + منو -------- */}
-                    <div className={styles.MenuWrapper} ref={dotsRef}>
-                        <button
-                            className={styles.ThreeDots}
-                            onClick={() => toggleMenu("dots")}
-                        >
-                            <ThreeDotsIcon />
-                        </button>
-
-                        {openMenu === "dots" && (
-                            <div className={styles.TooltipMenu}>
-                                <button className={styles.TooltipItem} onClick={handleReport}>
-                                    {/* <ReportIcon className={styles.TooltipIcon} /> */}
-                                    <span>گزارش پست</span>
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <div className={styles.PostContentWrapper}>
-                    <p>I met with the team of the Lockheed Martin defense company – one of the strongest enterprises in the United States, with which we have been cooperating for a long time. Lockheed Martin is the company that produces ATACMS, HIMARS, F-16s, and missiles for Patriot systems.</p>
-                </div>
-
-                <div className={styles.PostImgWrapper}>
-                    <img className={styles.PostImg} src={sample1} alt="" />
-                </div>
-
-                <div className={styles.PostStats}>
-                    <div className={styles.LeftSide}>
-                        <button
-                            className={`${styles.SavesWrapper} ${activeStates.save ? styles.Active : ""}`}
-                            onClick={toggleSave}
-                        >
-                            <SavesIcon />
-                            <p>571</p>
-                        </button>
-
-                        <button
-                            className={`${styles.LikesWrapper} ${activeStates.like ? styles.Active : ""}`}
-                            onClick={toggleLike}
-                        >
-                            <LikeIcon />
-                            <p>4.7K</p>
-                        </button>
-
-                        <button
-                            className={`${styles.DislikeWrapper} ${activeStates.dislike ? styles.Active : ""}`}
-                            onClick={toggleDislike}
-                        >
-                            <DislikeIcon />
-                            <p>4.7K</p>
-                        </button>
-
-                        <button className={styles.ComentsWrapper}>
-                            <CommentsIcon />
-                            <p>307</p>
-                        </button>
-
-                        <button className={styles.ViewsWrapper}>
-                            <ViewsIcon />
-                            <p>417K</p>
-                        </button>
-                    </div>
-
-                    <div className={styles.RightSide}>
-                        {/* -------- دکمه شیر + منو -------- */}
-                        <div className={styles.MenuWrapper} ref={shareRef}>
-                            <button
-                                className={styles.SharesWrapper}
-                                onClick={() => toggleMenu("share")}
-                            >
-                                <ShareIcon />
-                            </button>
-
-                            {openMenu === "share" && (
-                                <div className={`${styles.TooltipMenu} ${styles.TooltipMenuLeft}`}>
-                                    <button className={styles.TooltipItem} onClick={handleCopyLink}>
-                                        {/* <CopyIcon className={styles.TooltipIcon} /> */}
-                                        <span>{copied ? "کپی شد!" : "کپی کردن لینک"}</span>
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {posts.map((post) => (
+                <PostCard key={post.id} post={post} />
+            ))}
         </div>
-    )
+    );
 }

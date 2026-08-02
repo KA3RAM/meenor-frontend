@@ -1,10 +1,10 @@
 import styles from "./Profile.module.css"
-import image2 from "../../assets/images/Lock.jpg"
+import image2 from "../../assets/images/lock.jpeg"
 import {
     add_to_wishlist_chatBot, edit_user_profile, edit_user_profile_password,
     get_all_wishlist_phone,
     get_user_profile,
-    login_send_data_token
+    login_send_data_token, user_profile
 } from "../../services/Axios";
 import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
@@ -40,7 +40,6 @@ export default function Profile() {
     if (!localStorage.getItem("token")) {
         navigate("/register");
     }
-
 
 
 
@@ -82,16 +81,15 @@ export default function Profile() {
 
     const fetch_put_user_info = async () => {
         try{
-            let data_profile = {
-                first_name: editUserInfoName.first_name,
-                last_name: editUserInfoLastName.last_name,
-                username: editUserInfoUserName.username
-            }
+            const first_name= editUserInfoName.first_name
+            const last_name = editUserInfoLastName.last_name
+            const username= editUserInfoUserName.username
+            const image = fileInputRef.current?.files[0]
             let data_profile_password ={
                 password: editUserInfoPassWord.password
             }
 
-            let {data : data} = await edit_user_profile(data_profile)
+            let {data : data} = await edit_user_profile(first_name,last_name,username,image)
             if (editUserInfoPassWord.password?.length > 0){
                 try{
                     let {data: dataPassword} = await edit_user_profile_password(data_profile_password)
@@ -136,7 +134,7 @@ export default function Profile() {
 
         const fetch_get_users_data = async () => {
             try {
-                let { data: usersInfo} = await get_user_profile();
+                let { data: usersInfo} = await user_profile();
                 setUsersInfo(usersInfo);
                 console.log(usersInfo);
 
@@ -169,14 +167,17 @@ export default function Profile() {
                     onClick={handleAvatarClick}
                     style={{ cursor: isEditing ? "pointer" : "default" }}
                 >
-                    {profileImagePreview || usersInfo.profile_image ? (
+                    {profileImagePreview || usersInfo.profile_pic ? (
                         <img
                             className={styles.profile_picture}
-                            src={profileImagePreview || usersInfo.profile_image}
+                            src={
+                                profileImagePreview ||
+                                `http://127.0.0.1:8000${usersInfo.profile_pic}`
+                            }
                             alt="profile"
                         />
                     ) : (
-                        <DefaultUserIcon  />
+                        <DefaultUserIcon />
                     )}
 
                     {isEditing && (

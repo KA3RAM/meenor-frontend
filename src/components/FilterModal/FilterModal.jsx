@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./Filtermodal.module.css";
+import { CHB_send_input_good } from "../../services/Axios";
+
+// حداقل تعداد کاراکتری که باید تایپ بشه تا ریکوئست جستجو زده بشه
+const MIN_SEARCH_LENGTH = 2;
+// مدت زمان صبر بعد از آخرین تایپ کاربر، قبل از زدن ریکوئست (debounce)
+const SEARCH_DEBOUNCE_MS = 300;
 
 /**
  * مودال فیلتر محصولات
@@ -7,27 +13,31 @@ import styles from "./Filtermodal.module.css";
  * props:
  * - isOpen: boolean -> نمایش/عدم نمایش مودال
  * - onClose: () => void -> بستن مودال (کلیک بیرون، دکمه بستن، Esc)
- * - products: [{ id, name, price?, image? }] -> لیست محصولات برای جستجو
- * - onSelectProduct: (product) => void -> وقتی کاربر یک محصول رو از دراپ‌باکس انتخاب می‌کنه
- * - onApply: (searchTerm) => void -> وقتی دکمه «اعمال فیلتر» زده میشه
+ * - onApply: (product) => void -> وقتی دکمه «اعمال فیلتر» زده میشه، با کل آبجکت
+ *   محصول انتخاب‌شده (شامل id واقعیش) صدا زده می‌شه — نه فقط متن جستجو.
  */
-export default function FilterModal({
-    isOpen,
-    onClose,
-    products = [],
-    onSelectProduct,
-    onApply,
-}) {
+export default function FilterModal({ isOpen, onClose, onApply }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [showDropdown, setShowDropdown] = useState(false);
+    // نتیجه‌ی جست‌وجوی محصول از بک‌اند (آرایه‌ای از آبجکت‌ها با id/name/...)
+    const [results, setResults] = useState([]);
+    const [loadingResults, setLoadingResults] = useState(false);
+    // آبجکت کامل محصولی که کاربر واقعاً از دراپ‌داون انتخاب کرده (نه فقط متن تایپ‌شده)
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
     const modalRef = useRef(null);
     const inputRef = useRef(null);
+    const debounceTimerRef = useRef(null);
+    // شماره‌ی هر ریکوئست؛ تا اگه جواب یه ریکوئستِ قدیمی دیر برسه، نادیده گرفته بشه
+    const requestIdRef = useRef(0);
 
     // ریست شدن استیت هر بار که مودال بسته میشه
     useEffect(() => {
         if (!isOpen) {
             setSearchTerm("");
             setShowDropdown(false);
+            setResults([]);
+            setSelectedProduct(null);
         } else {
             // فوکوس روی اینپوت هنگام باز شدن
             setTimeout(() => inputRef.current?.focus(), 0);
@@ -56,27 +66,67 @@ export default function FilterModal({
         return () => document.removeEventListener("keydown", handleEsc);
     }, [isOpen, onClose]);
 
-    if (!isOpen) return null;
+    // جست‌وجوی محصول از بک‌اند — با debounce، هر بار متنِ سرچ عوض بشه
+    useEffect(() => {
+        const query = searchTerm.trim();
 
-    const filteredProducts = searchTerm.trim()
-        ? products.filter((p) =>
-              p.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
-          )
-        : [];
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+        }
+
+        if (query.length < MIN_SEARCH_LENGTH) {
+            setResults([]);
+            setLoadingResults(false);
+            return;
+        }
+
+        debounceTimerRef.current = setTimeout(async () => {
+            const currentRequestId = ++requestIdRef.current;
+            setLoadingResults(true);
+            try {
+                const { data } = await CHB_send_input_good(query);
+                // اگه در همین فاصله کاربر دوباره تایپ کرده و ریکوئست جدیدتری رفته، این جواب رو نادیده بگیر
+                if (currentRequestId !== requestIdRef.current) return;
+                setResults(data ?? []);
+            } catch (err) {
+                if (currentRequestId !== requestIdRef.current) return;
+                console.error("خطا در جستجوی محصول:", err);
+                setResults([]);
+            } finally {
+                if (currentRequestId === requestIdRef.current) {
+                    setLoadingResults(false);
+                }
+            }
+        }, SEARCH_DEBOUNCE_MS);
+
+        return () => clearTimeout(debounceTimerRef.current);
+    }, [searchTerm]);
+
+    if (!isOpen) return null;
 
     const handleChange = (e) => {
         setSearchTerm(e.target.value);
         setShowDropdown(true);
+        // اگه کاربر بعد از انتخاب دوباره دستی تایپ کنه، انتخاب قبلی دیگه معتبر نیست
+        setSelectedProduct(null);
     };
 
     const handleSelect = (product) => {
         setSearchTerm(product.name);
         setShowDropdown(false);
-        onSelectProduct?.(product);
+        setSelectedProduct(product);
+    };
+
+    const handleReset = () => {
+        setSearchTerm("");
+        setSelectedProduct(null);
+        setResults([]);
+        inputRef.current?.focus();
     };
 
     const handleApply = () => {
-        onApply?.(searchTerm);
+        if (!selectedProduct) return;
+        onApply?.(selectedProduct);
         onClose();
     };
 
@@ -130,10 +180,7 @@ export default function FilterModal({
                         {searchTerm && (
                             <button
                                 className={styles.clearIcon}
-                                onClick={() => {
-                                    setSearchTerm("");
-                                    inputRef.current?.focus();
-                                }}
+                                onClick={handleReset}
                                 aria-label="پاک کردن جستجو"
                             >
                                 ×
@@ -141,18 +188,20 @@ export default function FilterModal({
                         )}
                     </div>
 
-                    {showDropdown && searchTerm.trim() && (
+                    {showDropdown && searchTerm.trim().length >= MIN_SEARCH_LENGTH && (
                         <div className={styles.dropdown}>
-                            {filteredProducts.length > 0 ? (
-                                filteredProducts.map((product) => (
+                            {loadingResults ? (
+                                <p className={styles.emptyState}>در حال جستجو...</p>
+                            ) : results.length > 0 ? (
+                                results.map((product) => (
                                     <button
                                         key={product.id}
                                         className={styles.dropdownItem}
                                         onClick={() => handleSelect(product)}
                                     >
-                                        {product.image && (
+                                        {product.image_link && (
                                             <img
-                                                src={product.image}
+                                                src={product.image_link}
                                                 alt=""
                                                 className={styles.itemImage}
                                             />
@@ -161,11 +210,6 @@ export default function FilterModal({
                                             <p className={styles.itemName}>
                                                 {product.name}
                                             </p>
-                                            {product.price && (
-                                                <p className={styles.itemPrice}>
-                                                    {product.price}
-                                                </p>
-                                            )}
                                         </div>
                                     </button>
                                 ))
@@ -174,16 +218,23 @@ export default function FilterModal({
                             )}
                         </div>
                     )}
+
+                    {searchTerm.trim() && !selectedProduct && (
+                        <p className={styles.selectHint}>
+                            لطفاً محصول رو از لیست بالا انتخاب کن.
+                        </p>
+                    )}
                 </div>
 
                 <div className={styles.footer}>
-                    <button
-                        className={styles.resetBtn}
-                        onClick={() => setSearchTerm("")}
-                    >
+                    <button className={styles.resetBtn} onClick={handleReset}>
                         پاک کردن
                     </button>
-                    <button className={styles.applyBtn} onClick={handleApply}>
+                    <button
+                        className={styles.applyBtn}
+                        onClick={handleApply}
+                        disabled={!selectedProduct}
+                    >
                         اعمال فیلتر
                     </button>
                 </div>

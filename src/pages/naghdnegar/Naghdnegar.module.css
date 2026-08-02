@@ -208,6 +208,19 @@
     height: 3rem;            
 }
 
+.Filterwrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.feedStatus {
+    text-align: center;
+    color: #71767b;
+    padding: 2rem 0;
+    font-size: 0.95rem;
+}
+
 .filterp{
     font-size: larger;           
 }

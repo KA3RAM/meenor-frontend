@@ -27,7 +27,6 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
     const fileInputRef = useRef(null);
     const topicWrapperRef = useRef(null);
     const textareaRef = useRef(null);
-    const titleRef = useRef(null);
 
     const debounceTimerRef = useRef(null);
     // شماره‌ی هر ریکوئست؛ تا اگه جواب یه ریکوئستِ قدیمی دیر برسه، نادیده گرفته بشه
@@ -160,19 +159,18 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
         if (!canSubmit || submitting) return;
         setSubmitting(true);
         try {
-            const title = titleRef.current?.value ?? "";
             const content = text.trim();
             const phoneId = topic.id; // آیدی محصولی که کاربر از دراپ‌داون انتخاب کرده
             const imageFile = image?.file ?? null;
 
-            const { data } = await creat_post(phoneId, imageFile, title, content);
+            const { data } = await creat_post(phoneId, imageFile, content);
 
             onSubmit?.(data);
             onClose();
-            console.log(data)
         } catch (err) {
-            console.error("خطا در ارسال پست:", err);
-        } finally {
+            console.error("STATUS:", err.response?.status);
+            console.error("ERROR DATA:", err.response?.data);
+            console.error("ERROR:", err);        } finally {
             setSubmitting(false);
         }
     };
@@ -192,12 +190,6 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
                     <img className={styles.avatar} src={lock} alt="profile" />
 
                     <div className={styles.composeCol}>
-                        <input
-                            ref={titleRef}
-                            className={styles.titleInput}
-                            placeholder="عنوان پست..."
-                        />
-
                         <textarea
                             ref={textareaRef}
                             className={styles.textarea}

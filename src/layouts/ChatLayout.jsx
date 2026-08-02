@@ -2,7 +2,7 @@
 import { Outlet } from "react-router-dom";
 import styles from "./ChatLayout.module.css";
 import { NavLink} from "react-router-dom";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import lock from "../assets/images/Lock.jpg";
 import NewPostModal from "../components/NewPostModal/NewPostModal";
 /* ---------------------------------- icons --------------------------------- */
@@ -14,6 +14,7 @@ import Contact from "../assets/icons/Sidebar/contact.svg";
 import AboutUs from "../assets/icons/Sidebar/about-us.svg";
 import Naghdnegar from "../assets/icons/Sidebar/nn.svg"; 
 import Likes from "../assets/icons/Sidebar/Likes.svg"
+import {user_profile} from "../services/Axios";
 
 export default function ChatLayout() {
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -32,6 +33,24 @@ export default function ChatLayout() {
         { to: "/contact", label: "ارتباط با ما", icon: Contact },
         { to: "/about", label: "درباره ما", icon: AboutUs },
     ];
+    const [userProfile, setUserProfile] = useState({});
+
+    useEffect(() => {
+        const fetch_get_user_profile_short = async () =>{
+            try{
+
+                let {data : data} = await user_profile()
+                setUserProfile(data)
+
+            }
+            catch(err){
+                console.error("STATUS:", err.response?.status);
+                console.error("ERROR DATA:", err.response?.data);
+                console.error("ERROR:", err);
+            }
+        }
+        fetch_get_user_profile_short()
+    }, []);
 
     return (
         <div className={styles.BlackWrapper}>
@@ -66,11 +85,11 @@ export default function ChatLayout() {
 
                 <div className={styles.ButtomWrapper}>
                     <div className={styles.ButtomProfileCard}>
-                        <img className={styles.ProfileCard} src={lock} alt="profile" />
+                        <img className={styles.ProfileCard} src={`http://127.0.0.1:8000${userProfile.profile_pic}`} alt="profile" />
                     </div>
                     <div className={styles.AccInfoBox}>
-                        <p className={styles.username}>کسری آقایاری</p>
-                        <p className={styles.handle}>@KA3RAM</p>
+                        <p className={styles.username}>{userProfile.first_name + "" + userProfile.last_name}</p>
+                        <p className={styles.handle}>{userProfile.username}</p>
                     </div>
                 </div>
             </aside>
