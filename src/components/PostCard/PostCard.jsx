@@ -12,7 +12,7 @@ import { ReactComponent as ShareIcon } from "../../assets/icons/PostImages/Share
 import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.svg";
 import { ReactComponent as DislikeIcon } from "../../assets/icons/PostImages/dislike.svg";
 
-import { reaction_change_post } from "../../services/Axios";
+import { reaction_change_post, save_post, unsave_post, check_if_saved_post } from "../../services/Axios";
 import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import { useUserProfile } from "../../utils/useUserProfile";
 
@@ -131,8 +131,36 @@ export default function PostCard({ post }) {
     const toggleLike = () => sendReaction("like");
     const toggleDislike = () => sendReaction("dislike");
 
-    const toggleSave = () => {
-        setActiveStates(prev => ({ ...prev, save: !prev.save }));
+    // موقع لود شدن کارت، چک می‌کنیم این پست از قبل توی ذخیره‌شده‌ها هست یا نه،
+    // تا آیکون سیو از همون اول درست (طلایی/توخالی) نمایش داده بشه.
+    useEffect(() => {
+        let cancelled = false;
+        if (!post?.id) return;
+        check_if_saved_post(post.id)
+            .then(({ data }) => {
+                if (!cancelled) setActiveStates((prev) => ({ ...prev, save: Boolean(data?.exists) }));
+            })
+            .catch((err) => console.error("خطا در گرفتن وضعیت ذخیره:", err));
+        return () => {
+            cancelled = true;
+        };
+    }, [post?.id]);
+
+    // کلیک روی آیکون سیو: اگه قبلاً سیو شده بود حذفش می‌کنه، وگرنه سیوش می‌کنه —
+    // با آپدیت خوش‌بینانه‌ی UI و برگردوندن وضعیت قبلی در صورت خطا.
+    const toggleSave = async (e) => {
+        const wasSaved = activeStates.save;
+        setActiveStates((prev) => ({ ...prev, save: !wasSaved }));
+        try {
+            if (wasSaved) {
+                await unsave_post(post.id);
+            } else {
+                await save_post(post.id);
+            }
+        } catch (err) {
+            console.error("خطا در تغییر وضعیت ذخیره:", err);
+            setActiveStates((prev) => ({ ...prev, save: wasSaved }));
+        }
     };
 
     return (

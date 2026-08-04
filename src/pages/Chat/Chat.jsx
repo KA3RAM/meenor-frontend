@@ -7,6 +7,7 @@ import { ReactComponent as StarIcon } from "../../assets/icons/Sidebar/Likes.svg
 import {
     CHB_send_input_good,
     add_to_wishlist_chatBot,
+    delete_wishlist_chatBot,
     check_if_wishlist_chatBot,
 } from "../../services/Axios";
 import {useNavigate} from "react-router-dom";
@@ -209,15 +210,21 @@ function ComparisonBlock({ productA, productB }) {
     const [wishlistedA, setWishlistedA] = useState(false);
     const [wishlistedB, setWishlistedB] = useState(false);
 
-    // کلیک روی ستاره: محصول رو به ویشلیست اضافه می‌کنه و اگه موفق بود، ستاره رو پر می‌کنه
-    async function handleAddToWishlist(product, side) {
+    // کلیک روی ستاره: اگه محصول از قبل توی ویشلیست بود حذفش می‌کنه (ستاره توخالی می‌شه)،
+    // وگرنه اضافه‌اش می‌کنه (ستاره توپر می‌شه).
+    async function handleToggleWishlist(product, side, isCurrentlyWishlisted) {
         if (!product?.id) return;
+        const setWishlisted = side === "A" ? setWishlistedA : setWishlistedB;
         try {
-            await add_to_wishlist_chatBot(product.id);
-            if (side === "A") setWishlistedA(true);
-            else setWishlistedB(true);
+            if (isCurrentlyWishlisted) {
+                await delete_wishlist_chatBot(product.id);
+                setWishlisted(false);
+            } else {
+                await add_to_wishlist_chatBot(product.id);
+                setWishlisted(true);
+            }
         } catch (err) {
-            console.error("افزودن به ویشلیست با خطا مواجه شد:", err);
+            console.error("تغییر وضعیت ویشلیست با خطا مواجه شد:", err);
         }
     }
 
@@ -282,8 +289,8 @@ function ComparisonBlock({ productA, productB }) {
                             className={`${styles.wishlistButton} ${styles.wishlistButtonLeft} ${
                                 wishlistedA ? styles.wishlistButtonActive : ""
                             }`}
-                            onClick={() => handleAddToWishlist(productA, "A")}
-                            aria-label="افزودن به ویشلیست"
+                            onClick={() => handleToggleWishlist(productA, "A", wishlistedA)}
+                            aria-label={wishlistedA ? "حذف از ویشلیست" : "افزودن به ویشلیست"}
                         >
                             <StarIcon />
                         </button>
@@ -305,8 +312,8 @@ function ComparisonBlock({ productA, productB }) {
                             className={`${styles.wishlistButton} ${styles.wishlistButtonRight} ${
                                 wishlistedB ? styles.wishlistButtonActive : ""
                             }`}
-                            onClick={() => handleAddToWishlist(productB, "B")}
-                            aria-label="افزودن به ویشلیست"
+                            onClick={() => handleToggleWishlist(productB, "B", wishlistedB)}
+                            aria-label={wishlistedB ? "حذف از ویشلیست" : "افزودن به ویشلیست"}
                         >
                             <StarIcon />
                         </button>

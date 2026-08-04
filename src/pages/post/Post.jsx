@@ -18,6 +18,9 @@ import {
     get_comment,
     set_comment,
     reaction_change_post,
+    save_post,
+    unsave_post,
+    check_if_saved_post,
     user_profile, get_poster_profile,
 } from "../../services/Axios"
 import { resolveMediaUrl } from "../../utils/resolveMediaUrl"
@@ -207,9 +210,38 @@ export default function Post() {
         }
     }
 
+    /* چک کردن اینکه این پست از قبل ذخیره شده یا نه، تا آیکون سیو درست نمایش داده بشه */
+    useEffect(() => {
+        let cancelled = false
+        if (!post?.id) return
+        check_if_saved_post(post.id)
+            .then(({ data }) => {
+                if (!cancelled) setActiveStates((prev) => ({ ...prev, save: Boolean(data?.exists) }))
+            })
+            .catch((err) => console.error("خطا در گرفتن وضعیت ذخیره:", err))
+        return () => {
+            cancelled = true
+        }
+    }, [post?.id])
+
     const toggleLike = () => sendReaction("like")
     const toggleDislike = () => sendReaction("dislike")
-    const toggleSave = () => setActiveStates((prev) => ({ ...prev, save: !prev.save }))
+
+    // کلیک روی آیکون سیو: اگه قبلاً سیو شده بود حذفش می‌کنه، وگرنه سیوش می‌کنه
+    const toggleSave = async () => {
+        const wasSaved = activeStates.save
+        setActiveStates((prev) => ({ ...prev, save: !wasSaved }))
+        try {
+            if (wasSaved) {
+                await unsave_post(post.id)
+            } else {
+                await save_post(post.id)
+            }
+        } catch (err) {
+            console.error("خطا در تغییر وضعیت ذخیره:", err)
+            setActiveStates((prev) => ({ ...prev, save: wasSaved }))
+        }
+    }
 
     // مثل توییتر/یوتیوب: با یه کلیک، لینک همین پست مستقیم کپی می‌شه
     const handleShareClick = async () => {

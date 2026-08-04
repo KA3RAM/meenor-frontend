@@ -72,15 +72,15 @@ export const add_to_wishlist_chatBot = (input) => {
 
 
 }
-// export const delete_wishlist_chatBot = (input) => {
-//     const token = localStorage.getItem("token");
-//     const url = `http://127.0.0.1:8000/chatbot/wishlist_phone/${input}/`
-//     return axios.delete(url,{
-//         headers: {
-//             "authorization": `Token ${token}`,
-//         }
-//     })
-// }
+export const delete_wishlist_chatBot = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/chatbot/wishlist_phone/${input}/`
+    return axios.delete(url,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
 
 export const check_if_wishlist_chatBot = (input) => {
     const token = localStorage.getItem("token");
@@ -103,6 +103,46 @@ export const get_all_wishlist_phone = () => {
 
 }
 
+export const save_post = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/save_post/${input}/`
+    return axios.get(url,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
+export const unsave_post = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/save_post/${input}/`
+    return axios.delete(url,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
+
+export const check_if_saved_post = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/is_saved/${input}/`
+    return axios.get(url,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
+export const get_all_saved_posts = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/saved_posts/`
+    return axios.get(url,{
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
 
 export const like_phone_chatbot = (input) => {
     const token = localStorage.getItem("token");
