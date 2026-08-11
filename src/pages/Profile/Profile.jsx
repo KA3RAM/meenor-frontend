@@ -282,7 +282,11 @@ export default function Profile() {
                     {listOfWishlist.map((item, index) => (
                         <div className={styles.whishlist_card}  key={index}>
                             <div className={styles.product_img_wrapper}>
-                                <img className={styles.product_img} src={image2} alt="product_name" />
+                                <img
+                                className={styles.product_img}
+                                src={item.image_link || image2}
+                                alt={`${item.brand ?? ""} ${item.model ?? ""}`.trim()}
+                            />
                             </div>
                             <p>{item.brand} {item.model}</p>
                         </div>

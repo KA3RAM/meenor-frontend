@@ -351,3 +351,12 @@ export const search_post = (input) => {
 
 
 
+export const ai_response = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/chatbot/ai_chat/`
+    return axios.post(url,input, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}

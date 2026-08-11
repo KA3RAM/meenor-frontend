@@ -9,6 +9,7 @@ import {
     add_to_wishlist_chatBot,
     delete_wishlist_chatBot,
     check_if_wishlist_chatBot,
+    ai_response,
 } from "../../services/Axios";
 import {useNavigate} from "react-router-dom";
 
@@ -547,13 +548,6 @@ function ProductAutocomplete({ value, onChange, onSelectProduct, placeholder }) 
     );
 }
 
-/* --------------------------- placeholder responder ----------------------- */
-function fakeAssistantReply(text) {
-    return new Promise((resolve) =>
-        setTimeout(() => resolve(`(نمونه پاسخ) دریافت شد: «${text}»`), 600)
-    );
-}
-
 /* ------------------------------- component ------------------------------ */
 export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
     const navigate = useNavigate();
@@ -639,6 +633,18 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
         });
     }
 
+    // سوالِ چت رو با آیدیِ دو محصولِ انتخاب‌شده به بک‌اند هوش مصنوعی می‌فرسته و
+    // متن جواب رو برمی‌گردونه. طبق مستندات API: بادی { phone1_id, phone2_id, question }،
+    // جواب هم توی کلید answer برمی‌گرده.
+    async function defaultSendMessage(text) {
+        const { data } = await ai_response({
+            phone1_id: selectedProductA?.id,
+            phone2_id: selectedProductB?.id,
+            question: text,
+        });
+        return data?.answer;
+    }
+
     async function handleSendChat(e) {
         e.preventDefault();
         const text = chatInput.trim();
@@ -653,7 +659,7 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
         try {
             const reply = onSendMessage
                 ? await onSendMessage(text, history)
-                : await fakeAssistantReply(text);
+                : await defaultSendMessage(text);
 
             if (reply) {
                 setMessages((prev) => [
@@ -661,6 +667,16 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
                     { id: Date.now() + 1, role: "assistant", text: reply },
                 ]);
             }
+        } catch (err) {
+            console.error("خطا در گرفتن پاسخ هوش مصنوعی:", err);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: Date.now() + 1,
+                    role: "assistant",
+                    text: "متأسفانه در دریافت پاسخ خطایی پیش اومد. دوباره امتحان کن.",
+                },
+            ]);
         } finally {
             setSending(false);
         }
