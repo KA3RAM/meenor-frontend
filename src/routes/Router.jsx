@@ -23,6 +23,7 @@ import Naghdnegar from "../pages/naghdnegar/Naghdnegar"
 import Likes from "../pages/Likes/Likes"
 import Saves from "../pages/Saves/Saves"
 import Search from "../pages/Search/Search"
+import ManagePost from "../pages/ManagePost/ManagePost"
 
 export default function Router() {
     return(
@@ -50,6 +51,7 @@ export default function Router() {
                     <Route path="/search" element={<Search />} />
                     <Route path="/bookmarks" element={<Saves />} />
                     <Route path="/post/:id" element={<Post />} />
+                    <Route path="/ManagePost" element={<ManagePost />} />
                 </Route>
 
             </Routes>

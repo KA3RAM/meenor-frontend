@@ -15,6 +15,7 @@ import AboutUs from "../assets/icons/Sidebar/about-us.svg";
 import Naghdnegar from "../assets/icons/Sidebar/nn.svg"; 
 import Likes from "../assets/icons/Sidebar/Likes.svg"
 import {user_profile} from "../services/Axios";
+import { label } from "framer-motion/client";
 
 export default function ChatLayout() {
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -29,9 +30,11 @@ export default function ChatLayout() {
         { to: "/chat", label: " مقایسه با هوش مصنوعی", icon: Ai },
         { to: "/naghdnegar", label: "نقد نگار", icon: Naghdnegar },
         { to: "/bookmarks", label: "ذخیره‌ها", icon: Saves },
-        { to: "/profile", label: "ویشلیست", icon: Likes },
+        { to: "/ManagePost", label: "مدیریت پست ها", icon: AboutUs},
+        { to: "/profile", label: "علاقه مندی ها", icon: Likes },
         { to: "/contact", label: "ارتباط با ما", icon: Contact },
         { to: "/about", label: "درباره ما", icon: AboutUs },
+        
     ];
     const [userProfile, setUserProfile] = useState({});
 

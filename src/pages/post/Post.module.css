@@ -218,22 +218,22 @@
 
 /* ------------------------- Active States ------------------------- */
 .LikesWrapper.Active {
-    color: #FF3040;
+    color: #ffffff;
 }
 
 .LikesWrapper.Active svg {
-    fill: #FF3040;
-    stroke: #FF3040;
+    fill: #ffffff;
+    stroke: #ffffff;
     animation: pop 0.3s ease;
 }
 
 .DislikeWrapper.Active {
-    color: #5B8DEF;
+    color: #ffffff;
 }
 
 .DislikeWrapper.Active svg {
-    fill: #5B8DEF;
-    stroke: #5B8DEF;
+    fill: #ffffff;
+    stroke: #ffffff;
     animation: pop 0.3s ease;
 }
 
@@ -267,10 +267,10 @@
 
 .UserComentWrapper {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
     gap: 0.5rem;
-    padding: 1rem;
+    /* padding: 0.5rem; */
     flex-wrap: wrap;
 }
 
