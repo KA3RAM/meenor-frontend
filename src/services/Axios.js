@@ -182,8 +182,6 @@ export const check_if_like_chatbot = (input) => {
 
 
 
-
-
 export const get_user_profile = () => {
     const token = localStorage.getItem("token");
     const url = `http://127.0.0.1:8000/account/profile/`;
@@ -355,6 +353,28 @@ export const ai_response = (input) => {
     const token = localStorage.getItem("token");
     const url = `http://127.0.0.1:8000/chatbot/ai_chat/`
     return axios.post(url,input, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
+
+
+export const get_users_posts = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/user_posts/`
+    return axios.get(url, {
+        headers: {
+            "authorization": `Token ${token}`,
+        }
+    })
+}
+
+export const delete_post = (input) => {
+    const token = localStorage.getItem("token");
+    const url = `http://127.0.0.1:8000/naghdnegar/delete_post/${input}/`
+    return axios.delete(url, {
         headers: {
             "authorization": `Token ${token}`,
         }

@@ -288,7 +288,7 @@ export default function Profile() {
                                 alt={`${item.brand ?? ""} ${item.model ?? ""}`.trim()}
                             />
                             </div>
-                            <p>{item.brand} {item.model}</p>
+                            <p>{item.name}</p>
                         </div>
                     ))}
 

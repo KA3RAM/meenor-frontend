@@ -7,6 +7,7 @@ import Art from "../../assets/images/Arthur.jpg";
 import { ReactComponent as CommentsIcon } from "../../assets/icons/PostImages/Coments.svg";
 import { ReactComponent as ViewsIcon } from "../../assets/icons/PostImages/Views.svg";
 import { ReactComponent as ThreeDotsIcon } from "../../assets/icons/PostImages/Threedots.svg";
+import { ReactComponent as DeleteIcon } from "../../assets/icons/PostImages/delete.svg";
 import { ReactComponent as SavesIcon } from "../../assets/icons/PostImages/Saves.svg";
 import { ReactComponent as ShareIcon } from "../../assets/icons/PostImages/Share.svg";
 import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.svg";
@@ -30,7 +31,7 @@ import { useUserProfile } from "../../utils/useUserProfile";
     like_count/dislike_count/comment_count هست — پس نیازی به یه ریکوئست جداگانه‌ی
     get_post برای هر پست نیست؛ همون دیتای اولیه کافیه.                            */
 /* ------------------------------------------------------------------------------ */
-export default function PostCard({ post }) {
+export default function PostCard({ post, onDelete }) {
     const navigate = useNavigate();
 
     const [activeStates, setActiveStates] = useState({
@@ -52,7 +53,7 @@ export default function PostCard({ post }) {
           author.username ||
           `کاربر #${post.user}`
         : `کاربر #${post.user}`;
-    const avatarSrc = author?.profile_pic ? resolveMediaUrl(author.profile_pic) : Art;
+    const avatarSrc = author?.profile_pic;
 
     const postImageUrl = resolveMediaUrl(post.image);
 
@@ -60,6 +61,19 @@ export default function PostCard({ post }) {
     const [copied, setCopied] = useState(false);
 
     const dotsRef = useRef(null);
+
+    function DefaultUserIcon() {
+        return (
+            <div style={{
+
+            }}>
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#faf9f9" style={{width: "44px", height: "44px"}}>
+                    <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#ffffff"></path>
+                    <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#ffffff"></path>
+                </svg>
+            </div>
+        )
+    }
 
     useEffect(() => {
         function handleClickOutside(e) {
@@ -167,29 +181,52 @@ export default function PostCard({ post }) {
         <div className={styles.UserPost} onClick={() => navigate(`/post/${post.id}`)}>
             <div className={styles.PostHeader}>
                 <div className={styles.HeaderInfo}>
-                    <img className={styles.pictureProfile} src={avatarSrc} alt="" />
+                    {avatarSrc ? (
+                        <img
+                            className={styles.pictureProfile}
+                            src={avatarSrc}
+                            alt="profile"
+                        />
+                    ) : (
+                        <DefaultUserIcon className={styles.pictureProfile} />
+                    )}
+
                     <p className={styles.Name}>{displayName}</p>
                 </div>
 
-                {/* -------- دکمه سه‌نقطه + منو -------- */}
+                {/* -------- دکمه سه‌نقطه + منو (فید معمولی) یا دکمه‌ی حذف (صفحه‌ی مدیریت پست‌ها) -------- */}
                 {/* stopPropagation چون این دکمه داخل کارتیه که خودش با کلیک به صفحه‌ی پست می‌ره */}
-                <div className={styles.MenuWrapper} ref={dotsRef} onClick={(e) => e.stopPropagation()}>
+                {onDelete ? (
                     <button
-                        className={styles.ThreeDots}
-                        onClick={() => toggleMenu("dots")}
+                        type="button"
+                        className={styles.DeletePostButton}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(post);
+                        }}
+                        aria-label="حذف پست"
                     >
-                        <ThreeDotsIcon />
+                        <DeleteIcon />
                     </button>
+                ) : (
+                    <div className={styles.MenuWrapper} ref={dotsRef} onClick={(e) => e.stopPropagation()}>
+                        <button
+                            className={styles.ThreeDots}
+                            onClick={() => toggleMenu("dots")}
+                        >
+                            <ThreeDotsIcon />
+                        </button>
 
-                    {openMenu === "dots" && (
-                        <div className={styles.TooltipMenu}>
-                            <button className={styles.TooltipItem} onClick={handleReport}>
-                                {/* <ReportIcon className={styles.TooltipIcon} /> */}
-                                <span>گزارش پست</span>
-                            </button>
-                        </div>
-                    )}
-                </div>
+                        {openMenu === "dots" && (
+                            <div className={styles.TooltipMenu}>
+                                <button className={styles.TooltipItem} onClick={handleReport}>
+                                    {/* <ReportIcon className={styles.TooltipIcon} /> */}
+                                    <span>گزارش پست</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             <div className={styles.PostContentWrapper}>

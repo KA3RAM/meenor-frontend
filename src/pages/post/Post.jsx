@@ -28,7 +28,18 @@ import { useUserProfile } from "../../utils/useUserProfile"
 
 const MAX_TEXTAREA_HEIGHT = 200 // بعد از این ارتفاع (به px)، خود باکس اسکرول می‌خوره
 const MAX_COMENT_LENGTH = 500 // حداکثر تعداد کاراکتر مجاز برای کامنت
+function DefaultUserIcon() {
+    return (
+        <div style={{
 
+        }}>
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#faf9f9" style={{width: "44px", height: "44px"}}>
+                <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#ffffff"></path>
+                <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#ffffff"></path>
+            </svg>
+        </div>
+    )
+}
 // تاریخ+ساعت دقیق کامنت رو خوانا نشون می‌ده (نه فقط تاریخ، چون بک‌اند ساعت دقیق می‌فرسته)
 function formatDateTime(iso) {
     if (!iso) return ""
@@ -57,13 +68,23 @@ function CommentItem({ comment }) {
           `کاربر #${comment.user}`
         : `کاربر #${comment.user}`
     const handle = author?.username ? `@${author.username}` : ""
-    const avatarSrc = author?.profile_pic ? resolveMediaUrl(author.profile_pic) : Art
+    const avatarSrc = author?.profile_pic
 
     return (
         <>
             <div className={styles.ComentsPeopleWrapper}>
                 <div className={styles.HeaderInfo}>
-                    <img className={styles.pictureProfile} src={avatarSrc} alt="" />
+
+                    {avatarSrc ? (
+                        <img
+                            className={styles.pictureProfile}
+                            src={avatarSrc}
+                            alt=""
+                        />
+                    ) : (
+                        <DefaultUserIcon className={styles.pictureProfile} />
+                    )}
+
                     <p className={styles.Name}>{displayName}</p>
                     {handle && <p className={styles.Handle}>{handle}</p>}
                     <span className={styles.Dot}>·</span>
@@ -108,7 +129,20 @@ export default function Post() {
         ? `کاربر #${post.user}`
         : ""
     const authorHandle = author?.username ? `@${author.username}` : ""
-    const authorAvatar = author?.profile_pic ? resolveMediaUrl(author.profile_pic) : Art
+    const authorAvatar = author?.profile_pic
+
+    function DefaultUserIcon() {
+        return (
+            <div style={{
+
+            }}>
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#faf9f9" style={{width: "44px", height: "44px"}}>
+                    <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#ffffff"></path>
+                    <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#ffffff"></path>
+                </svg>
+            </div>
+        )
+    }
 
 
     const fetch_get_poster_data = async () => {
@@ -320,7 +354,15 @@ export default function Post() {
 
                 <div className={styles.PostHeader}>
                     <div className={styles.HeaderInfo}>
-                        <img className={styles.pictureProfile} src={authorAvatar} alt="" />
+                        {authorAvatar ? (
+                            <img
+                                className={styles.pictureProfile}
+                                src={authorAvatar}
+                                alt="profile"
+                            />
+                        ) : (
+                            <DefaultUserIcon className={styles.pictureProfile} />
+                        )}
                         <p className={styles.Name}>{authorName}</p>
                         {authorHandle && <p className={styles.Handle}>{authorHandle}</p>}
                     </div>
@@ -397,7 +439,15 @@ export default function Post() {
                     <h3 className={styles.h3}>نظرات</h3>
                     <hr className={styles.hr} />
                     <div className={styles.UserComentWrapper}>
-                        <img className={styles.UserProfilePic} src={currentUserAvatar} alt="" />
+                        {currentUserAvatar ? (
+                            <img
+                                className={styles.UserProfilePic}
+                                src={authorAvatar}
+                                alt=""
+                            />
+                        ) : (
+                            <DefaultUserIcon className={styles.UserProfilePic} />
+                        )}
                         <div className={styles.ComentInputBox}>
                             <textarea
                                 ref={textareaRef}

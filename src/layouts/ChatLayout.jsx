@@ -38,6 +38,23 @@ export default function ChatLayout() {
     ];
     const [userProfile, setUserProfile] = useState({});
 
+    function DefaultUserIcon() {
+        return (
+            <div style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+            }}>
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#faf9f9" style={{width: "44px", height: "44px"}}>
+                    <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#ffffff"></path>
+                    <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#ffffff"></path>
+                </svg>
+            </div>
+        )
+    }
+
     const navigate = useNavigate();
     const goToProfile = () => {
         navigate("/profile");
@@ -93,10 +110,18 @@ export default function ChatLayout() {
 
                 <div className={styles.ButtomWrapper} onClick={goToProfile}>
                     <div className={styles.ButtomProfileCard}>
-                        <img className={styles.ProfileCard} src={`http://127.0.0.1:8000${userProfile.profile_pic}`} alt="profile" />
+                        {userProfile.profile_pic ? (
+                            <img
+                                className={styles.ProfileCard}
+                                src={`http://127.0.0.1:8000${userProfile.profile_pic}`}
+                                alt="profile"
+                            />
+                        ) : (
+                            <DefaultUserIcon className={styles.ProfileCard} />
+                        )}
                     </div>
                     <div className={styles.AccInfoBox}>
-                        <p className={styles.username}>{userProfile.first_name + "" + userProfile.last_name}</p>
+                        <p className={styles.username}>{userProfile.first_name + " " + userProfile.last_name}</p>
                         <p className={styles.handle}>{userProfile.username}</p>
                     </div>
                 </div>

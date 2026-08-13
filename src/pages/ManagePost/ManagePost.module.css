@@ -1,0 +1,15 @@
+.wrapper {
+    font-family: "Anjoman";
+    max-width: 800px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.feedStatus {
+    text-align: center;
+    color: #71767b;
+    padding: 2rem 0;
+    font-size: 0.95rem;
+}

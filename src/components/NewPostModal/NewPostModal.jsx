@@ -34,6 +34,19 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
     // شماره‌ی هر ریکوئست؛ تا اگه جواب یه ریکوئستِ قدیمی دیر برسه، نادیده گرفته بشه
     const requestIdRef = useRef(0);
 
+    function DefaultUserIcon() {
+        return (
+            <div style={{
+
+            }}>
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#faf9f9" style={{width: "44px", height: "44px"}}>
+                    <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#ffffff"></path>
+                    <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#ffffff"></path>
+                </svg>
+            </div>
+        )
+    }
+
     const fetch_get_user_profile = async () => {
         try{
             let{data:data} = await user_profile()
@@ -205,8 +218,15 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
                 </div>
 
                 <div className={styles.body}>
-                    <img className={styles.avatar} src={`http://127.0.0.1:8000${usersProfile.profile_pic}`} alt="profile" />
-
+                    {usersProfile.profile_pic ? (
+                        <img
+                            className={styles.avatar}
+                             src={`http://127.0.0.1:8000${usersProfile.profile_pic}`}
+                             alt="profile"
+                        />
+                    ) : (
+                        <DefaultUserIcon className={styles.avatar} />
+                    )}
                     <div className={styles.composeCol}>
                         <textarea
                             ref={textareaRef}

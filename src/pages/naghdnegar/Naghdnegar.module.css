@@ -63,6 +63,41 @@
     color: inherit;
 }
 
+/* دکمه‌ی حذف پست، جایگزینِ سه‌نقطه توی صفحه‌ی مدیریت پست‌ها — همون جایگاه، رنگ قرمز */
+.DeletePostButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: auto;
+    margin-left: 0;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.DeletePostButton svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* delete.svg ظاهراً رنگش رو مستقیم روی path/rect ست کرده (نه currentColor) —
+   برای همین فقط ست‌کردن color روی دکمه کافی نبود؛ اینجا مستقیم override می‌کنیم.
+   چون CSS همیشه روی attributeهای ظاهریِ svg (fill/stroke) اولویت داره، این کار می‌کنه. */
+.DeletePostButton svg * {
+    fill: #ef4444 !important;
+    stroke: #ef4444 !important;
+}
+
+.DeletePostButton:hover {
+    opacity: 0.8;
+}
+
+.DeletePostButton:active {
+    transform: scale(0.92);
+}
+
 /* ------------------------- Content ------------------------- */
 .PostContentWrapper {
     margin-bottom: 0.8rem;
