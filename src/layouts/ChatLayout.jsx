@@ -3,7 +3,6 @@ import {Outlet, useNavigate} from "react-router-dom";
 import styles from "./ChatLayout.module.css";
 import { NavLink} from "react-router-dom";
 import {useEffect, useState} from "react";
-import lock from "../assets/images/Lock.jpg";
 import NewPostModal from "../components/NewPostModal/NewPostModal";
 /* ---------------------------------- icons --------------------------------- */
 import Home from "../assets/icons/Sidebar/home.svg";
@@ -14,6 +13,7 @@ import Contact from "../assets/icons/Sidebar/contact.svg";
 import AboutUs from "../assets/icons/Sidebar/about-us.svg";
 import Naghdnegar from "../assets/icons/Sidebar/nn.svg"; 
 import Likes from "../assets/icons/Sidebar/Likes.svg"
+import ChatSvg from "../assets/icons/Sidebar/chat.svg"
 import {user_profile} from "../services/Axios";
 import { label } from "framer-motion/client";
 
@@ -28,9 +28,9 @@ export default function ChatLayout() {
         { to: "/", label: "خانه", icon: Home },
         { to: "/search", label: "جست و جو", icon: Search },
         { to: "/chat", label: " مقایسه با هوش مصنوعی", icon: Ai },
-        { to: "/naghdnegar", label: "نقد نگار", icon: Naghdnegar },
+        { to: "/naghdnegar", label: "نقد نگار", icon: ChatSvg },
         { to: "/bookmarks", label: "ذخیره‌ها", icon: Saves },
-        { to: "/ManagePost", label: "مدیریت پست ها", icon: AboutUs},
+        { to: "/ManagePost", label: "مدیریت پست ها", icon: Naghdnegar},
         { to: "/profile", label: "علاقه مندی ها", icon: Likes },
         { to: "/contact", label: "ارتباط با ما", icon: Contact },
         { to: "/about", label: "درباره ما", icon: AboutUs },
@@ -47,7 +47,7 @@ export default function ChatLayout() {
                 alignItems: "center",
                 justifyContent: "center"
             }}>
-                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#faf9f9" style={{width: "44px", height: "44px"}}>
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#faf9f9" style={{width: "24px", height: "24px"}}>
                     <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#ffffff"></path>
                     <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#ffffff"></path>
                 </svg>

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
-
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import App from './App';
 
 import "./styles/global.css"
@@ -19,5 +19,5 @@ root.render(
   </React.StrictMode>
 );
 
-
+serviceWorkerRegistration.register();
 reportWebVitals();
