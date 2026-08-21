@@ -29,6 +29,10 @@ api.interceptors.request.use((config) => {
 /*                                   Chatbot                                  */
 /* -------------------------------------------------------------------------- */
 
+// توجه: برای کاهش هزینه، بک‌اند اینجا دیگه مشخصات کامل گوشی رو برنمی‌گردونه —
+// فقط یه نسخه‌ی سبک از هر نتیجه شامل id، name و image_link. برای گرفتن
+// مشخصات کامل (بعد از اینکه کاربر یکی از نتایج رو انتخاب کرد)، باید id رو
+// به get_phone_details داد.
 export const CHB_send_input_good = (input) => {
     if (input.length > 0) {
         return api.get(`/chatbot/search_phone/`, { params: { search: input } });

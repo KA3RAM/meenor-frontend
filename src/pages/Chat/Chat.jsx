@@ -6,6 +6,7 @@ import { ReactComponent as RefreshIcon } from "../../assets/icons/chat/RefreshIc
 import { ReactComponent as StarIcon } from "../../assets/icons/Sidebar/Likes.svg";
 import {
     CHB_send_input_good,
+    get_phone_details,
     add_to_wishlist_chatBot,
     delete_wishlist_chatBot,
     check_if_wishlist_chatBot,
@@ -439,7 +440,7 @@ function ComparisonBlock({ productA, productB }) {
 
 
 
-function ProductAutocomplete({ value, onChange, onSelectProduct, placeholder }) {
+function ProductAutocomplete({ value, onChange, onSelectProduct, onFetchingChange, placeholder }) {
     const [open, setOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [loadingProducts, setLoadingProducts] = useState(false);
@@ -500,12 +501,25 @@ function ProductAutocomplete({ value, onChange, onSelectProduct, placeholder }) 
         return () => clearTimeout(debounceTimerRef.current);
     }, [value]);
 
-    function selectProduct(product) {
+    // نتیجه‌ی سرچ فقط شامل name/id/image_link سبکه (برای کم‌شدن هزینه‌ی بک‌اند).
+    // برای گرفتن مشخصات کاملِ محصول (که برای جدول مقایسه لازمه)، باید بعد از
+    // انتخاب کاربر، id رو به get_phone_details بدیم و منتظر جواب کامل بمونیم.
+    async function selectProduct(product) {
         onChange(product.name);
-        // آبجکت کامل محصول (شامل id) رو هم به بیرون می‌فرستیم تا در مرحله‌ی
-        // "شروع مقایسه" بشه به‌جای متن، شناسه‌ی واقعی محصول رو به API داد.
-        onSelectProduct?.(product);
         setOpen(false);
+        // تا وقتی جزئیات کامل نرسیده، انتخاب قبلی (اگه بود) رو پاک می‌کنیم تا
+        // فرم اجازه‌ی «شروع مقایسه» با دیتای ناقص رو نده.
+        onSelectProduct?.(null);
+        onFetchingChange?.(true);
+        try {
+            const { data } = await get_phone_details(product.id);
+            onSelectProduct?.(data);
+        } catch (err) {
+            console.error("خطا در گرفتن مشخصات کامل محصول:", err);
+            onSelectProduct?.(null);
+        } finally {
+            onFetchingChange?.(false);
+        }
     }
 
     return (
@@ -516,7 +530,7 @@ function ProductAutocomplete({ value, onChange, onSelectProduct, placeholder }) 
                         <li className={styles.autocompleteItem}>در حال جستجو...</li>
                     )}
                     {!loadingProducts && products.length === 0 && (
-                        <li className={styles.autocompleteItem}>در حال جستجو...</li>
+                        <li className={styles.autocompleteItem}>چیزی یافت نشد</li>
                     )}
                     {!loadingProducts &&
                         products.map((p) => (
@@ -569,6 +583,10 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
     // آبجکت کامل محصول انتخاب‌شده (شامل id) برای هر دو باکس — برای مرحله‌ی بعدی که باید id رو به API مقایسه بفرستیم.
     const [selectedProductA, setSelectedProductA] = useState(null);
     const [selectedProductB, setSelectedProductB] = useState(null);
+    // وقتی کاربر یه نتیجه‌ی سرچ رو انتخاب می‌کنه، تا رسیدن جزئیات کامل از
+    // get_phone_details یه لحظه در حالت "در حال دریافت" هستیم.
+    const [fetchingA, setFetchingA] = useState(false);
+    const [fetchingB, setFetchingB] = useState(false);
 
     const [chatInput, setChatInput] = useState("");
     const [messages, setMessages] = useState([]);
@@ -688,6 +706,8 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
             setProductB("");
             setSelectedProductA(null);
             setSelectedProductB(null);
+            setFetchingA(false);
+            setFetchingB(false);
             setChatInput("");
             setMessages([]);
         });
@@ -735,6 +755,7 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
                                     setSelectedProductA(null);
                                 }}
                                 onSelectProduct={setSelectedProductA}
+                                onFetchingChange={setFetchingA}
                                 placeholder="محصول اول..."
                             />
                             <span className={styles.vsBadge}>VS</span>
@@ -745,12 +766,17 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
                                     setSelectedProductB(null);
                                 }}
                                 onSelectProduct={setSelectedProductB}
+                                onFetchingChange={setFetchingB}
                                 placeholder="محصول دوم..."
                             />
                         </div>
 
-                        {(productA.trim() && !selectedProductA) ||
-                        (productB.trim() && !selectedProductB) ? (
+                        {fetchingA || fetchingB ? (
+                            <p className={styles.compareHint}>
+                                در حال دریافت مشخصات محصول...
+                            </p>
+                        ) : (productA.trim() && !selectedProductA) ||
+                          (productB.trim() && !selectedProductB) ? (
                             <p className={styles.compareHint}>
                                 لطفاً محصول رو از لیست پیشنهادها انتخاب کن.
                             </p>
@@ -759,7 +785,7 @@ export default function ChatCompareBox({ onCompare, onSendMessage } = {}) {
                         <button
                             type="submit"
                             className={styles.primaryButton}
-                            disabled={!selectedProductA || !selectedProductB}
+                            disabled={!selectedProductA || !selectedProductB || fetchingA || fetchingB}
                         >
                             شروع مقایسه
                             <SendIcon />
