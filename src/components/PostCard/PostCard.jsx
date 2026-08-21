@@ -52,7 +52,7 @@ export default function PostCard({ post, onDelete }) {
           author.username ||
           `کاربر #${post.user}`
         : `کاربر #${post.user}`;
-    const avatarSrc = author?.profile_pic;
+    const avatarSrc = resolveMediaUrl(author?.profile_pic);
 
     const postImageUrl = resolveMediaUrl(post.image);
 
