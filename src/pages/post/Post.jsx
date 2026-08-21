@@ -7,7 +7,7 @@ import Art from "../../assets/images/Arthur.jpg"
 /* ---------------------------------- SVG COMPONENTS --------------------------------- */
 import { ReactComponent as CommentsIcon } from "../../assets/icons/PostImages/Coments.svg"
 import { ReactComponent as ViewsIcon } from "../../assets/icons/PostImages/Views.svg"
-import { ReactComponent as ThreeDotsIcon } from "../../assets/icons/PostImages/Threedots.svg"
+import { ReactComponent as DeleteIcon } from "../../assets/icons/PostImages/delete.svg"
 import { ReactComponent as SavesIcon } from "../../assets/icons/PostImages/Nsave.svg"
 import { ReactComponent as ShareIcon } from "../../assets/icons/PostImages/Share.svg"
 import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.svg"
@@ -21,6 +21,7 @@ import {
     save_post,
     unsave_post,
     check_if_saved_post,
+    delete_post,
     user_profile, get_poster_profile,
 } from "../../services/Axios"
 import { resolveMediaUrl } from "../../utils/resolveMediaUrl"
@@ -118,6 +119,7 @@ export default function Post() {
     const [activeStates, setActiveStates] = useState({ like: false, dislike: false, save: false })
     const [counts, setCounts] = useState({ like: 0, dislike: 0 })
     const [copied, setCopied] = useState(false) // فیدبک بصری بعد از کپی لینک پست
+    const [deletingPost, setDeletingPost] = useState(false)
 
     // نویسنده‌ی خودِ پست
     const author = useUserProfile(post?.user)
@@ -289,6 +291,20 @@ export default function Post() {
         }
     }
 
+    // کلیک روی آیکون سطل‌زباله: پست رو حذف می‌کنه و چون دیگه وجود نداره،
+    // کاربر رو به فید برمی‌گردونه.
+    const handleDeletePost = async () => {
+        if (deletingPost) return
+        setDeletingPost(true)
+        try {
+            await delete_post(post.id)
+            navigate("/naghdnegar")
+        } catch (err) {
+            console.error("خطا در حذف پست:", err)
+            setDeletingPost(false)
+        }
+    }
+
     const handleComentChange = (e) => {
         const value = e.target.value.slice(0, MAX_COMENT_LENGTH)
         setComentText(value)
@@ -367,9 +383,17 @@ export default function Post() {
                         {authorHandle && <p className={styles.Handle}>{authorHandle}</p>}
                     </div>
 
-                    <button className={styles.ThreeDots}>
-                        <ThreeDotsIcon />
-                    </button>
+                    {post.permission && (
+                        <button
+                            type="button"
+                            className={styles.DeletePostButton}
+                            onClick={handleDeletePost}
+                            disabled={deletingPost}
+                            aria-label="حذف پست"
+                        >
+                            <DeleteIcon />
+                        </button>
+                    )}
                 </div>
 
                 <div className={styles.PostContentWrapper}>

@@ -54,16 +54,7 @@
     color: #71767b;
 }
 
-.ThreeDots {
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-right: auto;
-    margin-left: 0;
-    color: inherit;
-}
-
-/* دکمه‌ی حذف پست، جایگزینِ سه‌نقطه توی صفحه‌ی مدیریت پست‌ها — همون جایگاه، رنگ قرمز */
+/* دکمه‌ی حذف پست — فقط وقتی نشون داده می‌شه که post.permission === true باشه */
 .DeletePostButton {
     background: none;
     border: none;
@@ -179,8 +170,7 @@
 
 .ComentsWrapper svg,
 .ViewsWrapper svg,
-.SharesWrapper svg,
-.ThreeDots svg {
+.SharesWrapper svg {
     width: 20px;
     height: 20px;
 }
@@ -294,52 +284,6 @@
     animation: fadeIn 0.15s ease;
 }
 
-.TooltipMenu {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    background: #16181c;
-    border: 1px solid rgba(255, 255, 255, 0.162);
-    border-radius: 10px;
-    padding: 4px;
-    min-width: 160px;
-    z-index: 20;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-    animation: fadeIn 0.15s ease;
-}
-
-.TooltipMenuLeft {
-    right: 0;
-    left: auto;
-}
-
-.TooltipItem {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    background: none;
-    border: none;
-    color: #e7e9ea;
-    font-family: "Anjoman";
-    font-size: 0.9rem;
-    padding: 0.6rem 0.7rem;
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: right;
-    transition: background 0.15s ease;
-}
-
-.TooltipItem:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.TooltipIcon {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-}
-
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -384,26 +328,6 @@
     }
 }
 @media (max-width: 480px) {
-    .TooltipMenu {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        right: auto;
-        transform: translate(-50%, -50%);
-        width: 80vw;
-        min-width: unset;
-        max-width: 250px;
-    }
-
-    .TooltipMenuLeft {
-        right: auto;
-        left: 50%;
-    }
-
-    .TooltipItem {
-        font-size: 0.85rem;
-        padding: 0.55rem 0.6rem;
-    }
     .LeftSide {
         gap: 12px;
         flex-wrap: wrap;

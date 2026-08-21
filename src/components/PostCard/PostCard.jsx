@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "../../pages/naghdnegar/Naghdnegar.module.css";
 import Art from "../../assets/images/Arthur.jpg";
@@ -6,14 +6,13 @@ import Art from "../../assets/images/Arthur.jpg";
 /* ---------------------------------- SVG COMPONENTS --------------------------------- */
 import { ReactComponent as CommentsIcon } from "../../assets/icons/PostImages/Coments.svg";
 import { ReactComponent as ViewsIcon } from "../../assets/icons/PostImages/Views.svg";
-import { ReactComponent as ThreeDotsIcon } from "../../assets/icons/PostImages/Threedots.svg";
 import { ReactComponent as DeleteIcon } from "../../assets/icons/PostImages/delete.svg";
 import { ReactComponent as SavesIcon } from "../../assets/icons/PostImages/Saves.svg";
 import { ReactComponent as ShareIcon } from "../../assets/icons/PostImages/Share.svg";
 import { ReactComponent as LikeIcon } from "../../assets/icons/PostImages/like.svg";
 import { ReactComponent as DislikeIcon } from "../../assets/icons/PostImages/dislike.svg";
 
-import { reaction_change_post, save_post, unsave_post, check_if_saved_post } from "../../services/Axios";
+import { reaction_change_post, save_post, unsave_post, check_if_saved_post, delete_post } from "../../services/Axios";
 import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import { useUserProfile } from "../../utils/useUserProfile";
 
@@ -57,10 +56,12 @@ export default function PostCard({ post, onDelete }) {
 
     const postImageUrl = resolveMediaUrl(post.image);
 
-    const [openMenu, setOpenMenu] = useState(null); // null | "dots"
     const [copied, setCopied] = useState(false);
-
-    const dotsRef = useRef(null);
+    // اگه onDelete از پراپ پاس داده نشده باشه (یعنی صفحه‌ی جاری خودِ صفحه‌ی
+    // مدیریت پست‌ها نیست)، PostCard خودش مستقیم درخواست حذف رو می‌زنه و بعد از
+    // موفقیت، خودش رو از DOM بیرون می‌کشه (چون این صفحات لیست پست‌ها رو جدا مدیریت نمی‌کنن).
+    const [deleted, setDeleted] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     function DefaultUserIcon() {
         return (
@@ -75,24 +76,25 @@ export default function PostCard({ post, onDelete }) {
         )
     }
 
-    useEffect(() => {
-        function handleClickOutside(e) {
-            if (dotsRef.current && !dotsRef.current.contains(e.target)) {
-                setOpenMenu(null);
-            }
+    // کلیک روی آیکون سطل‌زباله: اگه پراپ onDelete پاس داده شده باشه (مثل صفحه‌ی
+    // مدیریت پست‌ها که خودش snackbar و فیلترکردنِ لیست رو مدیریت می‌کنه)، همون
+    // کنترل رو صدا می‌زنیم. وگرنه (فید/سرچ/ذخیره‌شده‌ها/تک‌پست) خودمون مستقیم
+    // ریکوئست حذف رو می‌زنیم و با موفقیت، کارت از صفحه محو می‌شه.
+    const handleDeleteClick = async (e) => {
+        e.stopPropagation();
+        if (deleting) return;
+        if (onDelete) {
+            onDelete(post);
+            return;
         }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    const toggleMenu = (menuName) => {
-        setOpenMenu(prev => (prev === menuName ? null : menuName));
-    };
-
-    const handleReport = () => {
-        // اینجا منطق ارسال گزارش رو اضافه کن (مثلا یک درخواست API)
-        console.log("گزارش پست ارسال شد");
-        setOpenMenu(null);
+        setDeleting(true);
+        try {
+            await delete_post(post.id);
+            setDeleted(true);
+        } catch (err) {
+            console.error("خطا در حذف پست:", err);
+            setDeleting(false);
+        }
     };
 
     // مثل توییتر/یوتیوب: با یه کلیک، لینک پست مستقیم توی کلیپ‌بورد کپی می‌شه —
@@ -177,6 +179,8 @@ export default function PostCard({ post, onDelete }) {
         }
     };
 
+    if (deleted) return null;
+
     return (
         <div className={styles.UserPost} onClick={() => navigate(`/post/${post.id}`)}>
             <div className={styles.PostHeader}>
@@ -194,38 +198,18 @@ export default function PostCard({ post, onDelete }) {
                     <p className={styles.Name}>{displayName}</p>
                 </div>
 
-                {/* -------- دکمه سه‌نقطه + منو (فید معمولی) یا دکمه‌ی حذف (صفحه‌ی مدیریت پست‌ها) -------- */}
-                {/* stopPropagation چون این دکمه داخل کارتیه که خودش با کلیک به صفحه‌ی پست می‌ره */}
-                {onDelete ? (
+                {/* دکمه‌ی حذف — فقط وقتی نشون داده می‌شه که بک‌اند اجازه‌ی حذف این پست
+                    رو به کاربر داده باشه (post.permission === true) */}
+                {post.permission && (
                     <button
                         type="button"
                         className={styles.DeletePostButton}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete(post);
-                        }}
+                        onClick={handleDeleteClick}
+                        disabled={deleting}
                         aria-label="حذف پست"
                     >
                         <DeleteIcon />
                     </button>
-                ) : (
-                    <div className={styles.MenuWrapper} ref={dotsRef} onClick={(e) => e.stopPropagation()}>
-                        <button
-                            className={styles.ThreeDots}
-                            onClick={() => toggleMenu("dots")}
-                        >
-                            <ThreeDotsIcon />
-                        </button>
-
-                        {openMenu === "dots" && (
-                            <div className={styles.TooltipMenu}>
-                                <button className={styles.TooltipItem} onClick={handleReport}>
-                                    {/* <ReportIcon className={styles.TooltipIcon} /> */}
-                                    <span>گزارش پست</span>
-                                </button>
-                            </div>
-                        )}
-                    </div>
                 )}
             </div>
 
