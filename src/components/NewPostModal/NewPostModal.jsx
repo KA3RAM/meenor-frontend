@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./NewPostModal.module.css";
 import lock from "../../assets/images/Lock.jpg"
 import {CHB_send_input_good, creat_post, user_profile} from "../../services/Axios";
-
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 // حداقل تعداد کاراکتری که باید تایپ بشه تا ریکوئست جستجوی محصول زده بشه
 const MIN_SEARCH_LENGTH = 2;
 // مدت زمان صبر بعد از آخرین تایپ کاربر، قبل از زدن ریکوئست (debounce)
@@ -24,7 +24,7 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
     const [loadingTopics, setLoadingTopics] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
-    const [usersProfile, setUsersProfile] = useState();
+    const [usersProfile, setUsersProfile] = useState({});
 
     const fileInputRef = useRef(null);
     const topicWrapperRef = useRef(null);
@@ -219,14 +219,14 @@ export default function NewPostModal({ isOpen, onClose, onSubmit }) {
 
                 <div className={styles.body}>
                     {usersProfile.profile_pic ? (
-                        <img
-                            className={styles.avatar}
-                             src={`http://127.0.0.1:8000${usersProfile.profile_pic}`}
-                             alt="profile"
-                        />
-                    ) : (
-                        <DefaultUserIcon className={styles.avatar} />
-                    )}
+    <img
+        className={styles.avatar}
+        src={resolveMediaUrl(usersProfile.profile_pic)}
+        alt="profile"
+    />
+) : (
+    <DefaultUserIcon className={styles.avatar} />
+)}
                     <div className={styles.composeCol}>
                         <textarea
                             ref={textareaRef}

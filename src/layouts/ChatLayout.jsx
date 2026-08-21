@@ -16,7 +16,7 @@ import Likes from "../assets/icons/Sidebar/Likes.svg"
 import ChatSvg from "../assets/icons/Sidebar/chat.svg"
 import {user_profile} from "../services/Axios";
 import { label } from "framer-motion/client";
-
+import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 export default function ChatLayout() {
     const [isPostModalOpen, setIsPostModalOpen] = useState(false);
 
@@ -110,15 +110,15 @@ export default function ChatLayout() {
 
                 <div className={styles.ButtomWrapper} onClick={goToProfile}>
                     <div className={styles.ButtomProfileCard}>
-                        {userProfile.profile_pic ? (
-                            <img
-                                className={styles.ProfileCard}
-                                src={`http://127.0.0.1:8000${userProfile.profile_pic}`}
-                                alt="profile"
-                            />
-                        ) : (
-                            <DefaultUserIcon className={styles.ProfileCard} />
-                        )}
+                     {userProfile.profile_pic ? (
+    <img
+        className={styles.ProfileCard}
+        src={resolveMediaUrl(userProfile.profile_pic)}
+        alt="profile"
+    />
+) : (
+    <DefaultUserIcon className={styles.ProfileCard} />
+)}
                     </div>
                     <div className={styles.AccInfoBox}>
                         <p className={styles.username}>{userProfile.first_name + " " + userProfile.last_name}</p>

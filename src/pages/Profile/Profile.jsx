@@ -1,5 +1,6 @@
 import styles from "./Profile.module.css"
 import image2 from "../../assets/images/lock.jpeg"
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import {
     add_to_wishlist_chatBot, edit_user_profile, edit_user_profile_password,
     get_all_wishlist_phone,
@@ -168,17 +169,14 @@ export default function Profile() {
                     style={{ cursor: isEditing ? "pointer" : "default" }}
                 >
                     {profileImagePreview || usersInfo.profile_pic ? (
-                        <img
-                            className={styles.profile_picture}
-                            src={
-                                profileImagePreview ||
-                                `http://127.0.0.1:8000${usersInfo.profile_pic}`
-                            }
-                            alt="profile"
-                        />
-                    ) : (
-                        <DefaultUserIcon />
-                    )}
+    <img
+        className={styles.profile_picture}
+        src={profileImagePreview || resolveMediaUrl(usersInfo.profile_pic)}
+        alt="profile"
+    />
+			) : (
+    <DefaultUserIcon />
+)}
 
                     {isEditing && (
                         <div className={styles.avatar_overlay}>
